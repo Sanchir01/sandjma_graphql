@@ -1,0 +1,11 @@
+interface ProblemInterface {
+    message: String!
+}
+
+type InternalErrorProblem implements ProblemInterface {
+    message: String!
+}
+
+type InvalidSortRankProblem implements ProblemInterface {
+    message: String!
+}

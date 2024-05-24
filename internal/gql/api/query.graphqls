@@ -1,0 +1,8 @@
+
+
+type Query
+type ProductsQuery
+
+extend type Query{
+    getAll:ProductsQuery!
+}

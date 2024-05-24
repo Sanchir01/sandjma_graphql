@@ -1,0 +1,20 @@
+
+extend type ProductsQuery {
+    getAllProducts:[ProductFindResult!]! @goField(forceResolver: true)
+}
+
+
+type ProductBlockList {
+    items:[ProductInterface!]!
+    totalCount(estimate: UInt! = 10000): TotalCountResolvingResult! @goField(forceResolver: true)
+}
+
+type TotalCount {
+    value: UInt!
+}
+
+union TotalCountResolvingResult =
+    | TotalCount
+    | InternalErrorProblem
+
+union ProductFindResult =|ProductBlockList |InternalErrorProblem
