@@ -85,3 +85,12 @@ models:
       - github.com/99designs/gqlgen/graphql.Int
       - github.com/99designs/gqlgen/graphql.Int64
       - github.com/99designs/gqlgen/graphql.Int32
+  DateTime:
+    model:
+      - github.com/Sanchir01/sandjma_graphql/internal/gql/model.Rfc3339Date
+  UInt:
+    model:
+      - github.com/Sanchir01/sandjma_graphql/internal/gql/model.UInt
+  Uuid:
+    model:
+      - github.com/Sanchir01/sandjma_graphql/internal/gql/model.Uuid

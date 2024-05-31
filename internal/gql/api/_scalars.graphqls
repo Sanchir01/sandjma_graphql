@@ -1,7 +1,7 @@
 scalar Html
 scalar PageNumber
 scalar PageSize
-scalar Rfc3339Date
+scalar DateTime
 scalar UInt
 scalar Upload
 scalar Url
