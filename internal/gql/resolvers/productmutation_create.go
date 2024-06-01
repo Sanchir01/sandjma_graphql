@@ -6,14 +6,17 @@ package resolver
 
 import (
 	"context"
-	"log/slog"
-	"strconv"
 
 	"github.com/Sanchir01/sandjma_graphql/internal/gql/model"
 )
 
 // CreateProduct is the resolver for the createProduct field.
 func (r *productMutationResolver) CreateProduct(ctx context.Context, obj *model.ProductMutation, input *model.CreateProductInput) (model.ProductCreateResult, error) {
-	slog.Info("CreateProduct", input)
-	return model.ProductCreateOk{Products: strconv.Itoa(input.CategoryID)}, nil
+	r.Logger.Info("CreateProduct", input)
+
+	//id, err := r.ProductStr.CreateProduct(ctx, input)
+	//if err != nil {
+	//	return nil, err
+	//}
+	return nil, nil
 }

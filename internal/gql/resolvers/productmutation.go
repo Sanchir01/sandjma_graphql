@@ -6,7 +6,6 @@ package resolver
 
 import (
 	"context"
-	"fmt"
 
 	runtime "github.com/Sanchir01/sandjma_graphql/internal/gql/generated"
 	"github.com/Sanchir01/sandjma_graphql/internal/gql/model"
@@ -14,7 +13,7 @@ import (
 
 // Products is the resolver for the products field.
 func (r *mutationResolver) Products(ctx context.Context) (*model.ProductMutation, error) {
-	panic(fmt.Errorf("not implemented: Products - products"))
+	return &model.ProductMutation{}, nil
 }
 
 // ProductMutation returns runtime.ProductMutationResolver implementation.

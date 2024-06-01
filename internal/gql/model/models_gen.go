@@ -40,14 +40,15 @@ type VersionInterface interface {
 }
 
 type CreateProductInput struct {
-	Name        string `json:"name"`
-	Description string `json:"description"`
-	Price       int    `json:"price"`
-	CategoryID  int    `json:"categoryId"`
+	Name        string    `json:"name"`
+	Description string    `json:"description"`
+	Price       int       `json:"price"`
+	CategoryID  uuid.UUID `json:"categoryId"`
 }
 
 type GetAllProductsOk struct {
-	Products []*Product `json:"products"`
+	Products   []*Product `json:"products"`
+	TotalCount uint       `json:"totalCount"`
 }
 
 func (GetAllProductsOk) IsGetAllProductResult() {}
@@ -76,17 +77,18 @@ type Mutation struct {
 }
 
 type Product struct {
-	ID         uuid.UUID `json:"id"`
-	Name       string    `json:"name"`
-	Price      int       `json:"price"`
-	CreatedAt  time.Time `json:"created_at"`
-	UpdatedAt  time.Time `json:"updated_at"`
-	CategoryID uuid.UUID `json:"category_id"`
-	Version    uint      `json:"version"`
+	ID          uuid.UUID `json:"id"`
+	Name        string    `json:"name"`
+	Price       int       `json:"price"`
+	CreatedAt   time.Time `json:"created_at"`
+	UpdatedAt   time.Time `json:"updated_at"`
+	CategoryID  uuid.UUID `json:"category_id"`
+	Description string    `json:"description"`
+	Version     uint      `json:"version"`
 }
 
 type ProductCreateOk struct {
-	Products string `json:"products"`
+	Products uuid.UUID `json:"products"`
 }
 
 func (ProductCreateOk) IsProductCreateResult() {}

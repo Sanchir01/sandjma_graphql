@@ -20,10 +20,10 @@ input CreateProductInput {
     name: String!
     description:String!
     price: Int!
-    categoryId:Int!
+    categoryId:Uuid!
 }
 type ProductCreateOk {
-    products:ID!
+    products:Uuid!
 }
 union ProductCreateResult =
     | ProductNotFoundProblem

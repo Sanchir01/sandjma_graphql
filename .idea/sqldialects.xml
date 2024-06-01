@@ -8,5 +8,6 @@
     <file url="file://$PROJECT_DIR$/internal/database/migrations/20240530201159_reverse_id_products.sql" dialect="PostgreSQL" />
     <file url="file://$PROJECT_DIR$/internal/database/migrations/20240530201752_category_uuid.sql" dialect="PostgreSQL" />
     <file url="file://$PROJECT_DIR$/internal/database/migrations/20240530202554_products_one_to_many.sql" dialect="PostgreSQL" />
+    <file url="file://$PROJECT_DIR$/internal/database/migrations/20240531175503_products_description.sql" dialect="PostgreSQL" />
   </component>
 </project>

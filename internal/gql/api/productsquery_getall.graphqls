@@ -6,6 +6,7 @@ extend type ProductQuery {
 
 type GetAllProductsOk {
     products:[Product!]!
+    totalCount:UInt!
 }
 enum ArticleBlockFindSortEnum {
     CREATED_AT_ASC

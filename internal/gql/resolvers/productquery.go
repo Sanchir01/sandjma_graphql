@@ -6,15 +6,13 @@ package resolver
 
 import (
 	"context"
-	"fmt"
-
 	runtime "github.com/Sanchir01/sandjma_graphql/internal/gql/generated"
 	"github.com/Sanchir01/sandjma_graphql/internal/gql/model"
 )
 
 // Products is the resolver for the products field.
 func (r *queryResolver) Products(ctx context.Context) (*model.ProductQuery, error) {
-	panic(fmt.Errorf("not implemented: Products - products"))
+	return &model.ProductQuery{}, nil
 }
 
 // ProductQuery returns runtime.ProductQueryResolver implementation.
