@@ -6,6 +6,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/jmoiron/sqlx"
 	"github.com/samber/lo"
+	"log/slog"
 	"time"
 )
 
@@ -40,9 +41,10 @@ func (p *ProductPostgresStorage) CreateProduct(ctx context.Context, input *model
 
 	var id uuid.UUID
 	row := conn.QueryRowContext(ctx,
-		"INSERT INTO products(name, price, category_id,description) VALUES($1, $2, $3) RETURNING id",
+		"INSERT INTO products(name, price, category_id, description) VALUES($1, $2, $3, $4) RETURNING id",
 		input.Name, input.Price, input.CategoryID, input.Description)
 	if err := row.Err(); err != nil {
+		slog.Error("create product error", err)
 		return uuid.New(), err
 	}
 	if err := row.Scan(&id); err != nil {

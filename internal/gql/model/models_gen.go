@@ -11,6 +11,14 @@ import (
 	"github.com/google/uuid"
 )
 
+type CategoryCreateResult interface {
+	IsCategoryCreateResult()
+}
+
+type CategoryGetAllResult interface {
+	IsCategoryGetAllResult()
+}
+
 type GetAllProductResult interface {
 	IsGetAllProductResult()
 }
@@ -24,19 +32,54 @@ type ProductCreateResult interface {
 	IsProductCreateResult()
 }
 
-type ProductInterface interface {
-	IsProductInterface()
-	GetID() string
-	GetName() string
-	GetPrice() string
-	GetCratedAt() string
-	GetUpdatedAt() string
-	GetCategoryID() string
-}
-
 type VersionInterface interface {
 	IsVersionInterface()
 	GetVersion() uint
+}
+
+type Category struct {
+	ID          uuid.UUID `json:"id"`
+	Name        string    `json:"name"`
+	CreatedAt   time.Time `json:"created_at"`
+	UpdatedAt   time.Time `json:"updated_at"`
+	Description string    `json:"description"`
+	Version     uint      `json:"version"`
+}
+
+type CategoryCreateOk struct {
+	ID uuid.UUID `json:"Id"`
+}
+
+func (CategoryCreateOk) IsCategoryCreateResult() {}
+
+type CategoryGetAllOk struct {
+	Category []*Category `json:"category"`
+}
+
+func (CategoryGetAllOk) IsCategoryGetAllResult() {}
+
+type CategoryMutation struct {
+	CreateCategory CategoryCreateResult `json:"createCategory"`
+}
+
+type CategoryNotFoundProblem struct {
+	Message string `json:"message"`
+}
+
+func (CategoryNotFoundProblem) IsProblemInterface()     {}
+func (this CategoryNotFoundProblem) GetMessage() string { return this.Message }
+
+func (CategoryNotFoundProblem) IsCategoryCreateResult() {}
+
+func (CategoryNotFoundProblem) IsCategoryGetAllResult() {}
+
+type CategoryQuery struct {
+	GetAllCategory CategoryGetAllResult `json:"getAllCategory"`
+}
+
+type CreateCategoryInput struct {
+	Name        string `json:"name"`
+	Description string `json:"description"`
 }
 
 type CreateProductInput struct {
@@ -56,6 +99,10 @@ func (GetAllProductsOk) IsGetAllProductResult() {}
 type InternalErrorProblem struct {
 	Message string `json:"message"`
 }
+
+func (InternalErrorProblem) IsCategoryCreateResult() {}
+
+func (InternalErrorProblem) IsCategoryGetAllResult() {}
 
 func (InternalErrorProblem) IsProblemInterface()     {}
 func (this InternalErrorProblem) GetMessage() string { return this.Message }

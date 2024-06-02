@@ -1,21 +1,23 @@
 package telegram
 
 import (
+	"context"
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api"
-	"log"
 	"log/slog"
+	"time"
 )
 
 type BotStruct struct {
-	bot    *tgbotapi.BotAPI
-	logger *slog.Logger
+	bot      *tgbotapi.BotAPI
+	logger   *slog.Logger
+	cmdViews map[string]ViewFunc
 }
 
 func NewTgBotInitialize(bot *tgbotapi.BotAPI, lg *slog.Logger) *BotStruct {
 	return &BotStruct{bot: bot, logger: lg}
 }
 
-func (b *BotStruct) Start() error {
+func (b *BotStruct) Start(ctx context.Context) error {
 	u := tgbotapi.NewUpdate(0)
 	u.Timeout = 60
 
@@ -24,15 +26,16 @@ func (b *BotStruct) Start() error {
 		b.logger.Error("GetUpdatesChan error", slog.String("error", err.Error()))
 		return err
 	}
-	for update := range updates {
-		if update.Message != nil { // If we got a message
-			log.Printf("[%s] %s", update.Message.From.UserName, update.Message.Text)
 
-			msg := tgbotapi.NewMessage(update.Message.Chat.ID, update.Message.Text)
-			msg.ReplyToMessageID = update.Message.MessageID
-
-			b.bot.Send(msg)
+	for {
+		select {
+		case update := <-updates:
+			updateCtx, updateCancel := context.WithTimeout(ctx, 4*time.Second)
+			b.handleUpdate(updateCtx, update)
+			updateCancel()
+		case <-ctx.Done():
+			return ctx.Err()
 		}
 	}
-	return nil
+
 }

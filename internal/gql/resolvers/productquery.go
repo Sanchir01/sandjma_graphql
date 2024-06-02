@@ -6,6 +6,7 @@ package resolver
 
 import (
 	"context"
+
 	runtime "github.com/Sanchir01/sandjma_graphql/internal/gql/generated"
 	"github.com/Sanchir01/sandjma_graphql/internal/gql/model"
 )

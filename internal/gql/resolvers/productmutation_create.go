@@ -14,9 +14,9 @@ import (
 func (r *productMutationResolver) CreateProduct(ctx context.Context, obj *model.ProductMutation, input *model.CreateProductInput) (model.ProductCreateResult, error) {
 	r.Logger.Info("CreateProduct", input)
 
-	//id, err := r.ProductStr.CreateProduct(ctx, input)
-	//if err != nil {
-	//	return nil, err
-	//}
-	return nil, nil
+	id, err := r.ProductStr.CreateProduct(ctx, input)
+	if err != nil {
+		return nil, err
+	}
+	return model.ProductCreateOk{Products: id}, nil
 }

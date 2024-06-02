@@ -1,13 +1,4 @@
 
-interface ProductInterface {
-    id: ID!
-    name: String!
-    price :String!
-    crated_at:String!
-    updated_at:String!
-    category_id:String!
-}
-
 
 extend type ProductMutation {
     createProduct(input:CreateProductInput): ProductCreateResult! @goField(forceResolver: true)
@@ -16,6 +7,7 @@ extend type ProductMutation {
 type ProductNotFoundProblem implements ProblemInterface {
      message: String!
 }
+
 input CreateProductInput {
     name: String!
     description:String!

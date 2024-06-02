@@ -10,7 +10,7 @@ import (
 	httpServer "github.com/Sanchir01/sandjma_graphql/internal/server/http"
 	"github.com/Sanchir01/sandjma_graphql/pkg/lib/logger/handlers/slogpretty"
 	"github.com/go-chi/chi/v5"
-	"github.com/go-telegram-bot-api/telegram-bot-api"
+	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api"
 	"github.com/jmoiron/sqlx"
 	_ "github.com/lib/pq"
 	"log"
@@ -43,12 +43,16 @@ func main() {
 		productStorage = storage.NewProductPostgresStorage(db)
 		handlers       = httpHandlers.NewChiRouter(lg, cfg, r, productStorage)
 	)
-	allProducts, err := productStorage.GetAllProducts(context.Background())
-	lg.Warn("allProducts", allProducts)
 	serve := httpServer.NewHttpServer(cfg)
 	ctx, cancel := signal.NotifyContext(context.Background(), syscall.SIGTERM, syscall.SIGINT, os.Interrupt)
 	defer cancel()
+	bot, err := tgbotapi.NewBotAPI(os.Getenv("TELEGRAM_BOT_TOKEN"))
+	if err != nil {
+		log.Panic(err)
+	}
+	bot.Debug = true
 
+	telegramBot := telegram.NewTgBotInitialize(bot, lg)
 	go func(ctx context.Context) {
 		if err := serve.Run(handlers.StartHttpHandlers()); err != nil {
 			if !errors.Is(err, context.Canceled) {
@@ -59,15 +63,12 @@ func main() {
 		}
 	}(ctx)
 
-	bot, err := tgbotapi.NewBotAPI(os.Getenv("TELEGRAM_BOT_TOKEN"))
-	if err != nil {
-		log.Panic(err)
-	}
-
-	bot.Debug = true
-	telegramBot := telegram.NewTgBotInitialize(bot, lg)
-	if err := telegramBot.Start(); err != nil {
-		lg.Error("Telegram bot error", slog.String("error", err.Error()))
+	if err := telegramBot.Start(ctx); err != nil {
+		if !errors.Is(err, context.Canceled) {
+			lg.Error("Telegram bot error", slog.String("error", err.Error()))
+			return
+		}
+		lg.Error("Telegram bot stoped", slog.String("error", err.Error()))
 	}
 }
 

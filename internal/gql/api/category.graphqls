@@ -1,0 +1,8 @@
+type Category {
+    id:Uuid!
+    name:String!
+    created_at: DateTime!
+    updated_at: DateTime!
+    description:String!
+    version:UInt!
+}
