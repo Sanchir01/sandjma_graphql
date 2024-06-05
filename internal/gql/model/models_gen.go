@@ -8,6 +8,7 @@ import (
 	"strconv"
 	"time"
 
+	"github.com/99designs/gqlgen/graphql"
 	"github.com/google/uuid"
 )
 
@@ -23,6 +24,10 @@ type GetAllProductResult interface {
 	IsGetAllProductResult()
 }
 
+type LoginResult interface {
+	IsLoginResult()
+}
+
 type ProblemInterface interface {
 	IsProblemInterface()
 	GetMessage() string
@@ -32,19 +37,32 @@ type ProductCreateResult interface {
 	IsProductCreateResult()
 }
 
+type RegistrationsResult interface {
+	IsRegistrationsResult()
+}
+
 type VersionInterface interface {
 	IsVersionInterface()
 	GetVersion() uint
 }
 
+type AuthMutation struct {
+	Login        LoginResult         `json:"login"`
+	Registration RegistrationsResult `json:"registration"`
+}
+
 type Category struct {
 	ID          uuid.UUID `json:"id"`
 	Name        string    `json:"name"`
+	Slug        string    `json:"slug"`
 	CreatedAt   time.Time `json:"created_at"`
 	UpdatedAt   time.Time `json:"updated_at"`
 	Description string    `json:"description"`
 	Version     uint      `json:"version"`
 }
+
+func (Category) IsVersionInterface()   {}
+func (this Category) GetVersion() uint { return this.Version }
 
 type CategoryCreateOk struct {
 	ID uuid.UUID `json:"Id"`
@@ -100,6 +118,10 @@ type InternalErrorProblem struct {
 	Message string `json:"message"`
 }
 
+func (InternalErrorProblem) IsLoginResult() {}
+
+func (InternalErrorProblem) IsRegistrationsResult() {}
+
 func (InternalErrorProblem) IsCategoryCreateResult() {}
 
 func (InternalErrorProblem) IsCategoryGetAllResult() {}
@@ -119,6 +141,17 @@ func (InvalidSortRankProblem) IsProductCreateResult() {}
 
 func (InvalidSortRankProblem) IsProblemInterface()     {}
 func (this InvalidSortRankProblem) GetMessage() string { return this.Message }
+
+type LoginInput struct {
+	Phone    string `json:"phone"`
+	Password string `json:"password"`
+}
+
+type LoginResultOk struct {
+	User *User `json:"user"`
+}
+
+func (LoginResultOk) IsLoginResult() {}
 
 type Mutation struct {
 }
@@ -160,9 +193,34 @@ type ProductQuery struct {
 type Query struct {
 }
 
+type RegistrationsInput struct {
+	Phone    string `json:"phone"`
+	Password string `json:"password"`
+	Email    string `json:"email"`
+	Role     Role   `json:"role"`
+	Name     string `json:"name"`
+}
+
+type RegistrationsResultOk struct {
+	User *User `json:"user"`
+}
+
+func (RegistrationsResultOk) IsRegistrationsResult() {}
+
 type SortRankInput struct {
 	Prev string `json:"prev"`
 	Next string `json:"next"`
+}
+
+type User struct {
+	ID         uuid.UUID      `json:"id"`
+	Name       string         `json:"name"`
+	CreatedAt  time.Time      `json:"created_at"`
+	UpdatedAt  time.Time      `json:"updated_at"`
+	Phone      string         `json:"phone"`
+	Email      string         `json:"email"`
+	AvatarPath graphql.Upload `json:"avatar_path"`
+	Role       Role           `json:"role"`
 }
 
 type VersionMismatchProblem struct {
@@ -214,5 +272,48 @@ func (e *ArticleBlockFindSortEnum) UnmarshalGQL(v interface{}) error {
 }
 
 func (e ArticleBlockFindSortEnum) MarshalGQL(w io.Writer) {
+	fmt.Fprint(w, strconv.Quote(e.String()))
+}
+
+type Role string
+
+const (
+	RoleAdmin Role = "ADMIN"
+	RoleUser  Role = "USER"
+	RoleGuest Role = "GUEST"
+)
+
+var AllRole = []Role{
+	RoleAdmin,
+	RoleUser,
+	RoleGuest,
+}
+
+func (e Role) IsValid() bool {
+	switch e {
+	case RoleAdmin, RoleUser, RoleGuest:
+		return true
+	}
+	return false
+}
+
+func (e Role) String() string {
+	return string(e)
+}
+
+func (e *Role) UnmarshalGQL(v interface{}) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = Role(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid Role", str)
+	}
+	return nil
+}
+
+func (e Role) MarshalGQL(w io.Writer) {
 	fmt.Fprint(w, strconv.Quote(e.String()))
 }

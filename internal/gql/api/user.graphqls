@@ -1,0 +1,16 @@
+type User {
+    id:Uuid!
+    name:String!
+    created_at:DateTime!
+    updated_at:DateTime!
+    phone:String!
+    email:String!
+    avatar_path: Upload!
+    role: Role!
+}
+
+enum Role {
+    ADMIN
+    USER
+    GUEST
+}

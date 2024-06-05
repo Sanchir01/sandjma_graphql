@@ -1,7 +1,8 @@
 package resolver
 
 import (
-	storage "github.com/Sanchir01/sandjma_graphql/internal/database/store"
+	categoryStorage "github.com/Sanchir01/sandjma_graphql/internal/database/store/category"
+	productStorage "github.com/Sanchir01/sandjma_graphql/internal/database/store/product"
 	"log/slog"
 )
 
@@ -10,6 +11,7 @@ import (
 // It serves as dependency injection for your app, add any dependencies you require here.
 
 type Resolver struct {
-	ProductStr *storage.ProductPostgresStorage
-	Logger     *slog.Logger
+	ProductStr  *productStorage.ProductPostgresStorage
+	CategoryStr *categoryStorage.CategoryPostgresStore
+	Logger      *slog.Logger
 }

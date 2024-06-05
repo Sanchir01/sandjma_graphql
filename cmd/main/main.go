@@ -5,7 +5,8 @@ import (
 	"errors"
 	telegram "github.com/Sanchir01/sandjma_graphql/internal/bot"
 	"github.com/Sanchir01/sandjma_graphql/internal/config"
-	storage "github.com/Sanchir01/sandjma_graphql/internal/database/store"
+	categoryStore "github.com/Sanchir01/sandjma_graphql/internal/database/store/category"
+	"github.com/Sanchir01/sandjma_graphql/internal/database/store/product"
 	httpHandlers "github.com/Sanchir01/sandjma_graphql/internal/handlers"
 	httpServer "github.com/Sanchir01/sandjma_graphql/internal/server/http"
 	"github.com/Sanchir01/sandjma_graphql/pkg/lib/logger/handlers/slogpretty"
@@ -40,11 +41,13 @@ func main() {
 
 	r := chi.NewRouter()
 	var (
-		productStorage = storage.NewProductPostgresStorage(db)
-		handlers       = httpHandlers.NewChiRouter(lg, cfg, r, productStorage)
+		productStorage  = productStore.NewProductPostgresStorage(db)
+		categoryStorage = categoryStore.NewCategoryPostgresStore(db)
+		handlers        = httpHandlers.NewChiRouter(lg, cfg, r, productStorage, categoryStorage)
 	)
 	serve := httpServer.NewHttpServer(cfg)
 	ctx, cancel := signal.NotifyContext(context.Background(), syscall.SIGTERM, syscall.SIGINT, os.Interrupt)
+
 	defer cancel()
 	bot, err := tgbotapi.NewBotAPI(os.Getenv("TELEGRAM_BOT_TOKEN"))
 	if err != nil {

@@ -4,7 +4,9 @@ import (
 	"github.com/99designs/gqlgen/graphql/handler"
 	"github.com/99designs/gqlgen/graphql/playground"
 	"github.com/Sanchir01/sandjma_graphql/internal/config"
-	storage "github.com/Sanchir01/sandjma_graphql/internal/database/store"
+	categoryStore "github.com/Sanchir01/sandjma_graphql/internal/database/store/category"
+	productStore "github.com/Sanchir01/sandjma_graphql/internal/database/store/product"
+	storage "github.com/Sanchir01/sandjma_graphql/internal/database/store/product"
 	runtime "github.com/Sanchir01/sandjma_graphql/internal/gql/generated"
 	resolver "github.com/Sanchir01/sandjma_graphql/internal/gql/resolvers"
 	"github.com/go-chi/chi/v5"
@@ -13,25 +15,30 @@ import (
 )
 
 type Router struct {
-	chiRouter  *chi.Mux
-	lg         *slog.Logger
-	config     *config.Config
-	productStr *storage.ProductPostgresStorage
+	chiRouter   *chi.Mux
+	lg          *slog.Logger
+	config      *config.Config
+	productStr  *productStore.ProductPostgresStorage
+	categoryStr *categoryStore.CategoryPostgresStore
 }
 
-func NewChiRouter(lg *slog.Logger, config *config.Config, chi *chi.Mux, productStr *storage.ProductPostgresStorage) *Router {
+func NewChiRouter(
+	lg *slog.Logger, config *config.Config, chi *chi.Mux, productStr *storage.ProductPostgresStorage,
+	categoryStr *categoryStore.CategoryPostgresStore) *Router {
 	return &Router{
-		chiRouter:  chi,
-		lg:         lg,
-		config:     config,
-		productStr: productStr,
+		chiRouter:   chi,
+		lg:          lg,
+		config:      config,
+		productStr:  productStr,
+		categoryStr: categoryStr,
 	}
 }
 
 func (rout *Router) StartHttpHandlers() http.Handler {
 	srv := handler.NewDefaultServer(runtime.NewExecutableSchema(runtime.Config{Resolvers: &resolver.Resolver{
-		ProductStr: rout.productStr,
-		Logger:     rout.lg,
+		ProductStr:  rout.productStr,
+		CategoryStr: rout.categoryStr,
+		Logger:      rout.lg,
 	}}))
 
 	rout.chiRouter.Handle("/", playground.ApolloSandboxHandler("GraphQL playground", "/query"))

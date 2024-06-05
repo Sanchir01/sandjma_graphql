@@ -6,12 +6,25 @@ package resolver
 
 import (
 	"context"
-	"fmt"
+	"log/slog"
 
+	featureCategory "github.com/Sanchir01/sandjma_graphql/internal/feature/category"
 	"github.com/Sanchir01/sandjma_graphql/internal/gql/model"
+	"github.com/Sanchir01/sandjma_graphql/pkg/lib/api/response"
 )
 
 // GetAllCategory is the resolver for the getAllCategory field.
 func (r *categoryQueryResolver) GetAllCategory(ctx context.Context, obj *model.CategoryQuery) (model.CategoryGetAllResult, error) {
-	panic(fmt.Errorf("not implemented: GetAllCategory - getAllCategory"))
+	categoryStr, err := r.Resolver.CategoryStr.GetAllCategory(ctx)
+	if err != nil {
+		r.Logger.Error("GetAllCategory error", slog.String("error", err.Error()))
+		return response.NewInternalErrorProblem(), nil
+	}
+	r.Logger.Info("GetAllCategory", slog.Any("category", categoryStr))
+	categoriesGql, err := featureCategory.MapCategoryToGqlModel(categoryStr)
+	if err != nil {
+		r.Logger.Error("GetAllCategory mapping gql model error", slog.String("error", err.Error()))
+		return response.NewInternalErrorProblem(), nil
+	}
+	return model.CategoryGetAllOk{Category: categoriesGql}, nil
 }

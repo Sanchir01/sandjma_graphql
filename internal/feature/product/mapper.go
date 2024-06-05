@@ -1,4 +1,4 @@
-package fetureProduct
+package featureProduct
 
 import "github.com/Sanchir01/sandjma_graphql/internal/gql/model"
 
@@ -13,7 +13,6 @@ func MapManyProductsToGqlModels(products []model.Product) (items []*model.Produc
 		close(productChan)
 	}()
 
-	// Читаем из канала и заполняем срез productPtrs
 	for product := range productChan {
 		productPtrs = append(productPtrs, product)
 	}
