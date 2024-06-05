@@ -18,13 +18,13 @@ func (r *categoryQueryResolver) GetAllCategory(ctx context.Context, obj *model.C
 	categoryStr, err := r.Resolver.CategoryStr.GetAllCategory(ctx)
 	if err != nil {
 		r.Logger.Error("GetAllCategory error", slog.String("error", err.Error()))
-		return response.NewInternalErrorProblem(), nil
+		return response.NewInternalErrorProblem("error for get all category db"), nil
 	}
 	r.Logger.Info("GetAllCategory", slog.Any("category", categoryStr))
 	categoriesGql, err := featureCategory.MapCategoryToGqlModel(categoryStr)
 	if err != nil {
 		r.Logger.Error("GetAllCategory mapping gql model error", slog.String("error", err.Error()))
-		return response.NewInternalErrorProblem(), nil
+		return response.NewInternalErrorProblem("error for mapping category gql"), nil
 	}
 	return model.CategoryGetAllOk{Category: categoriesGql}, nil
 }

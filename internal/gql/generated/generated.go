@@ -358,7 +358,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.LoginResultOk.User(childComplexity), true
 
-	case "Mutation.user":
+	case "Mutation.auth":
 		if e.complexity.Mutation.Auth == nil {
 			break
 		}
@@ -706,7 +706,7 @@ union LoginResult = | LoginResultOk |InternalErrorProblem`, BuiltIn: false},
 	{Name: "../api/authmutation.graphqls", Input: `type AuthMutation
 
 extend type Mutation {
-    user:AuthMutation
+    auth:AuthMutation
 }`, BuiltIn: false},
 	{Name: "../api/authmutations_registrations.graphqls", Input: `extend type AuthMutation {
     registration(input:RegistrationsInput): RegistrationsResult! @goField(forceResolver: true)
@@ -865,7 +865,7 @@ type InvalidSortRankProblem implements ProblemInterface {
     updated_at:DateTime!
     phone:String!
     email:String!
-    avatar_path: Upload!
+    avatar_path: String!
     role: Role!
 }
 
@@ -3204,9 +3204,9 @@ func (ec *executionContext) _User_avatar_path(ctx context.Context, field graphql
 		}
 		return graphql.Null
 	}
-	res := resTmp.(graphql.Upload)
+	res := resTmp.(string)
 	fc.Result = res
-	return ec.marshalNUpload2githubᚗcomᚋ99designsᚋgqlgenᚋgraphqlᚐUpload(ctx, field.Selections, res)
+	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_User_avatar_path(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -3216,7 +3216,7 @@ func (ec *executionContext) fieldContext_User_avatar_path(_ context.Context, fie
 		IsMethod:   false,
 		IsResolver: false,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			return nil, errors.New("field of type Upload does not have child fields")
+			return nil, errors.New("field of type String does not have child fields")
 		},
 	}
 	return fc, nil
@@ -6141,7 +6141,7 @@ func (ec *executionContext) _Mutation(ctx context.Context, sel ast.SelectionSet)
 		switch field.Name {
 		case "__typename":
 			out.Values[i] = graphql.MarshalString("Mutation")
-		case "user":
+		case "auth":
 			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
 				return ec._Mutation_auth(ctx, field)
 			})
@@ -7340,21 +7340,6 @@ func (ec *executionContext) unmarshalNUInt2uint(ctx context.Context, v interface
 
 func (ec *executionContext) marshalNUInt2uint(ctx context.Context, sel ast.SelectionSet, v uint) graphql.Marshaler {
 	res := model.MarshalUInt(v)
-	if res == graphql.Null {
-		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
-			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
-		}
-	}
-	return res
-}
-
-func (ec *executionContext) unmarshalNUpload2githubᚗcomᚋ99designsᚋgqlgenᚋgraphqlᚐUpload(ctx context.Context, v interface{}) (graphql.Upload, error) {
-	res, err := graphql.UnmarshalUpload(v)
-	return res, graphql.ErrorOnPath(ctx, err)
-}
-
-func (ec *executionContext) marshalNUpload2githubᚗcomᚋ99designsᚋgqlgenᚋgraphqlᚐUpload(ctx context.Context, sel ast.SelectionSet, v graphql.Upload) graphql.Marshaler {
-	res := graphql.MarshalUpload(v)
 	if res == graphql.Null {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
 			ec.Errorf(ctx, "the requested element is null which the schema does not allow")

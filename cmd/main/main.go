@@ -7,6 +7,7 @@ import (
 	"github.com/Sanchir01/sandjma_graphql/internal/config"
 	categoryStore "github.com/Sanchir01/sandjma_graphql/internal/database/store/category"
 	"github.com/Sanchir01/sandjma_graphql/internal/database/store/product"
+	userStorage "github.com/Sanchir01/sandjma_graphql/internal/database/store/user"
 	httpHandlers "github.com/Sanchir01/sandjma_graphql/internal/handlers"
 	httpServer "github.com/Sanchir01/sandjma_graphql/internal/server/http"
 	"github.com/Sanchir01/sandjma_graphql/pkg/lib/logger/handlers/slogpretty"
@@ -43,12 +44,14 @@ func main() {
 	var (
 		productStorage  = productStore.NewProductPostgresStorage(db)
 		categoryStorage = categoryStore.NewCategoryPostgresStore(db)
-		handlers        = httpHandlers.NewChiRouter(lg, cfg, r, productStorage, categoryStorage)
+		userStorages    = userStorage.NewUserPostgresStorage(db)
+		handlers        = httpHandlers.NewChiRouter(lg, cfg, r, productStorage, categoryStorage, userStorages)
 	)
 	serve := httpServer.NewHttpServer(cfg)
 	ctx, cancel := signal.NotifyContext(context.Background(), syscall.SIGTERM, syscall.SIGINT, os.Interrupt)
 
 	defer cancel()
+
 	bot, err := tgbotapi.NewBotAPI(os.Getenv("TELEGRAM_BOT_TOKEN"))
 	if err != nil {
 		log.Panic(err)
@@ -56,6 +59,7 @@ func main() {
 	bot.Debug = true
 
 	telegramBot := telegram.NewTgBotInitialize(bot, lg)
+
 	go func(ctx context.Context) {
 		if err := serve.Run(handlers.StartHttpHandlers()); err != nil {
 			if !errors.Is(err, context.Canceled) {

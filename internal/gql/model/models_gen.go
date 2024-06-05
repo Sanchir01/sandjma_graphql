@@ -8,7 +8,6 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/99designs/gqlgen/graphql"
 	"github.com/google/uuid"
 )
 
@@ -213,14 +212,14 @@ type SortRankInput struct {
 }
 
 type User struct {
-	ID         uuid.UUID      `json:"id"`
-	Name       string         `json:"name"`
-	CreatedAt  time.Time      `json:"created_at"`
-	UpdatedAt  time.Time      `json:"updated_at"`
-	Phone      string         `json:"phone"`
-	Email      string         `json:"email"`
-	AvatarPath graphql.Upload `json:"avatar_path"`
-	Role       Role           `json:"role"`
+	ID         uuid.UUID `json:"id"`
+	Name       string    `json:"name"`
+	CreatedAt  time.Time `json:"created_at"`
+	UpdatedAt  time.Time `json:"updated_at"`
+	Phone      string    `json:"phone"`
+	Email      string    `json:"email"`
+	AvatarPath string    `json:"avatar_path"`
+	Role       Role      `json:"role"`
 }
 
 type VersionMismatchProblem struct {

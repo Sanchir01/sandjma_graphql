@@ -6,23 +6,23 @@ package resolver
 
 import (
 	"context"
+	"github.com/Sanchir01/sandjma_graphql/pkg/lib/api/response"
 
 	featureProduct "github.com/Sanchir01/sandjma_graphql/internal/feature/product"
 	"github.com/Sanchir01/sandjma_graphql/internal/gql/model"
-	"github.com/Sanchir01/sandjma_graphql/pkg/lib/api/response"
 )
 
 // GetAllProduct is the resolver for the getAllProduct field.
 func (r *productQueryResolver) GetAllProduct(ctx context.Context, obj *model.ProductQuery, sort model.ArticleBlockFindSortEnum) (model.GetAllProductResult, error) {
 	products, err := r.ProductStr.GetAllProducts(ctx)
 	if err != nil {
-		return response.NewInternalErrorProblem(), err
+		return response.NewInternalErrorProblem("error for get all products db"), nil
 	}
 	r.Logger.Info("All products", products, sort)
 
 	productsFetch, err := featureProduct.MapManyProductsToGqlModels(products)
 	if err != nil {
-		return response.NewInternalErrorProblem(), err
+		return response.NewInternalErrorProblem("error for mapping products gql"), nil
 	}
 
 	return model.GetAllProductsOk{Products: productsFetch, TotalCount: uint(len(products))}, nil

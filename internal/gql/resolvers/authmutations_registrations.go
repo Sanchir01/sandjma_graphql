@@ -6,11 +6,31 @@ package resolver
 
 import (
 	"context"
+	"github.com/Sanchir01/sandjma_graphql/pkg/lib/api/response"
+
 	"github.com/Sanchir01/sandjma_graphql/internal/gql/model"
 )
 
 // Registration is the resolver for the registration field.
 func (r *authMutationResolver) Registration(ctx context.Context, obj *model.AuthMutation, input *model.RegistrationsInput) (model.RegistrationsResult, error) {
 	r.Logger.Warn("registration input", input)
+	userPhone, _ := r.UserStr.GetUserByPhone(ctx, input.Phone)
+
+	if userPhone != nil {
+		r.Logger.Warn("user phone", userPhone)
+		return response.NewInternalErrorProblem("User with this phone already exists"), nil
+	}
+	userEmail, _ := r.UserStr.GetUserByEmail(ctx, input.Email)
+	if userEmail != nil {
+		r.Logger.Warn("user email", userEmail)
+		return response.NewInternalErrorProblem("User with this email already exists"), nil
+	}
+
+	newUser, err := r.UserStr.CreateUser(ctx, input)
+	if err != nil {
+		r.Logger.Warn("user created SUPER", newUser)
+		return response.NewInternalErrorProblem("Error for creating user"), nil
+	}
+
 	return nil, nil
 }

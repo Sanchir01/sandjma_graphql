@@ -5,7 +5,7 @@ type User {
     updated_at:DateTime!
     phone:String!
     email:String!
-    avatar_path: Upload!
+    avatar_path: String!
     role: Role!
 }
 

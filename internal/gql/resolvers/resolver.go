@@ -3,6 +3,7 @@ package resolver
 import (
 	categoryStorage "github.com/Sanchir01/sandjma_graphql/internal/database/store/category"
 	productStorage "github.com/Sanchir01/sandjma_graphql/internal/database/store/product"
+	userStorage "github.com/Sanchir01/sandjma_graphql/internal/database/store/user"
 	"log/slog"
 )
 
@@ -13,5 +14,6 @@ import (
 type Resolver struct {
 	ProductStr  *productStorage.ProductPostgresStorage
 	CategoryStr *categoryStorage.CategoryPostgresStore
+	UserStr     *userStorage.UserPostgresStorage
 	Logger      *slog.Logger
 }
