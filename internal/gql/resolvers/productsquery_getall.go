@@ -6,10 +6,10 @@ package resolver
 
 import (
 	"context"
-	"github.com/Sanchir01/sandjma_graphql/pkg/lib/api/response"
 
 	featureProduct "github.com/Sanchir01/sandjma_graphql/internal/feature/product"
 	"github.com/Sanchir01/sandjma_graphql/internal/gql/model"
+	"github.com/Sanchir01/sandjma_graphql/pkg/lib/api/response"
 )
 
 // GetAllProduct is the resolver for the getAllProduct field.

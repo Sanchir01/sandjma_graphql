@@ -32,7 +32,7 @@ func main() {
 	cfg := config.InitConfig()
 	lg := setupLogger(cfg.Env)
 	lg.Info("Graphql server starting up...", slog.String("port", cfg.HttpServer.Port))
-	db, err := sqlx.Connect("postgres", "user=postgres dbname=golangS sslmode=disable password=sanchirgarik01")
+	db, err := sqlx.Open("postgres", "user=postgres dbname=golangS sslmode=disable password=sanchirgarik01")
 	if err != nil {
 		lg.Error("sqlx.Connect error", slog.String("error", err.Error()))
 	}
@@ -45,7 +45,7 @@ func main() {
 		productStorage  = productStore.NewProductPostgresStorage(db)
 		categoryStorage = categoryStore.NewCategoryPostgresStore(db)
 		userStorages    = userStorage.NewUserPostgresStorage(db)
-		handlers        = httpHandlers.NewChiRouter(lg, cfg, r, productStorage, categoryStorage, userStorages)
+		handlers        = httpHandlers.NewChiRouter(lg, cfg, r, productStorage, categoryStorage, userStorages, db)
 	)
 	serve := httpServer.NewHttpServer(cfg)
 	ctx, cancel := signal.NotifyContext(context.Background(), syscall.SIGTERM, syscall.SIGINT, os.Interrupt)

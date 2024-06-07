@@ -6,31 +6,45 @@ package resolver
 
 import (
 	"context"
-	"github.com/Sanchir01/sandjma_graphql/pkg/lib/api/response"
-
+	userFeature "github.com/Sanchir01/sandjma_graphql/internal/feature/user"
 	"github.com/Sanchir01/sandjma_graphql/internal/gql/model"
+	"github.com/Sanchir01/sandjma_graphql/pkg/lib/api/response"
 )
 
 // Registration is the resolver for the registration field.
 func (r *authMutationResolver) Registration(ctx context.Context, obj *model.AuthMutation, input *model.RegistrationsInput) (model.RegistrationsResult, error) {
 	r.Logger.Warn("registration input", input)
-	userPhone, _ := r.UserStr.GetUserByPhone(ctx, input.Phone)
+	tr, err := r.DB.Beginx()
+
+	if err != nil {
+		r.Logger.Error("error for rollback transaction", err.Error())
+		return response.NewInternalErrorProblem("error for initiate transaction"), nil
+	}
+	userPhone, _ := r.UserStr.GetUserByPhone(ctx, tr, input.Phone)
 
 	if userPhone != nil {
 		r.Logger.Warn("user phone", userPhone)
 		return response.NewInternalErrorProblem("User with this phone already exists"), nil
 	}
-	userEmail, _ := r.UserStr.GetUserByEmail(ctx, input.Email)
+	userEmail, _ := r.UserStr.GetUserByEmail(ctx, tr, input.Email)
 	if userEmail != nil {
 		r.Logger.Warn("user email", userEmail)
 		return response.NewInternalErrorProblem("User with this email already exists"), nil
 	}
 
-	newUser, err := r.UserStr.CreateUser(ctx, input)
+	newUser, err := r.UserStr.CreateUser(ctx, tr, input)
 	if err != nil {
-		r.Logger.Warn("user created SUPER", newUser)
-		return response.NewInternalErrorProblem("Error for creating user"), nil
+		r.Logger.Warn("user created SUPER", err.Error())
+		return response.NewInternalErrorProblem("Error for creating new user"), nil
 	}
-
+	tokens, err := userFeature.GenerateJwtToken(newUser.ID, newUser.Role)
+	if err != nil {
+		r.Logger.Warn("errors generating jwt", err)
+	}
+	r.Logger.Warn("Tokens", tokens)
+	if err = tr.Rollback(); err != nil {
+		r.Logger.Error("error for rollback transaction", err.Error())
+		return response.NewInternalErrorProblem("error for rollback"), nil
+	}
 	return nil, nil
 }

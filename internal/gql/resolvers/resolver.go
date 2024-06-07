@@ -4,6 +4,7 @@ import (
 	categoryStorage "github.com/Sanchir01/sandjma_graphql/internal/database/store/category"
 	productStorage "github.com/Sanchir01/sandjma_graphql/internal/database/store/product"
 	userStorage "github.com/Sanchir01/sandjma_graphql/internal/database/store/user"
+	"github.com/jmoiron/sqlx"
 	"log/slog"
 )
 
@@ -16,4 +17,5 @@ type Resolver struct {
 	CategoryStr *categoryStorage.CategoryPostgresStore
 	UserStr     *userStorage.UserPostgresStorage
 	Logger      *slog.Logger
+	DB          *sqlx.DB
 }

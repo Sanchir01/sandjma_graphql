@@ -11,6 +11,7 @@ import (
 	runtime "github.com/Sanchir01/sandjma_graphql/internal/gql/generated"
 	resolver "github.com/Sanchir01/sandjma_graphql/internal/gql/resolvers"
 	"github.com/go-chi/chi/v5"
+	"github.com/jmoiron/sqlx"
 	"log/slog"
 	"net/http"
 )
@@ -22,11 +23,12 @@ type Router struct {
 	productStr  *productStore.ProductPostgresStorage
 	categoryStr *categoryStore.CategoryPostgresStore
 	userStr     *userStorage.UserPostgresStorage
+	db          *sqlx.DB
 }
 
 func NewChiRouter(
 	lg *slog.Logger, config *config.Config, chi *chi.Mux, productStr *storage.ProductPostgresStorage,
-	categoryStr *categoryStore.CategoryPostgresStore, userStr *userStorage.UserPostgresStorage) *Router {
+	categoryStr *categoryStore.CategoryPostgresStore, userStr *userStorage.UserPostgresStorage, db *sqlx.DB) *Router {
 	return &Router{
 		chiRouter:   chi,
 		lg:          lg,
@@ -34,6 +36,7 @@ func NewChiRouter(
 		productStr:  productStr,
 		categoryStr: categoryStr,
 		userStr:     userStr,
+		db:          db,
 	}
 }
 
@@ -43,6 +46,7 @@ func (rout *Router) StartHttpHandlers() http.Handler {
 		ProductStr:  rout.productStr,
 		CategoryStr: rout.categoryStr,
 		Logger:      rout.lg,
+		DB:          rout.db,
 	}}))
 
 	rout.chiRouter.Handle("/", playground.ApolloSandboxHandler("GraphQL playground", "/query"))

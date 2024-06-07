@@ -218,6 +218,7 @@ type User struct {
 	UpdatedAt  time.Time `json:"updated_at"`
 	Phone      string    `json:"phone"`
 	Email      string    `json:"email"`
+	Password   string    `json:"password"`
 	AvatarPath string    `json:"avatar_path"`
 	Role       Role      `json:"role"`
 }

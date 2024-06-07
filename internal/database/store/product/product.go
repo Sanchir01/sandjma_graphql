@@ -40,6 +40,7 @@ func (p *ProductPostgresStorage) CreateProduct(ctx context.Context, input *model
 	defer conn.Close()
 
 	var id uuid.UUID
+
 	row := conn.QueryRowContext(ctx,
 		"INSERT INTO products(name, price, category_id, description) VALUES($1, $2, $3, $4) RETURNING id",
 		input.Name, input.Price, input.CategoryID, input.Description)

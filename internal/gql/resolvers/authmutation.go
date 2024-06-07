@@ -13,7 +13,6 @@ import (
 
 // Auth is the resolver for the user field.
 func (r *mutationResolver) Auth(ctx context.Context) (*model.AuthMutation, error) {
-
 	return &model.AuthMutation{}, nil
 }
 
