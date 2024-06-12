@@ -17,11 +17,15 @@ func NewUserPostgresStorage(db *sqlx.DB) *UserPostgresStorage {
 	return &UserPostgresStorage{db: db}
 }
 
-func (db *UserPostgresStorage) GetUserByEmail(ctx context.Context, tr *sqlx.Tx, email string) (*model.User, error) {
-
+func (db *UserPostgresStorage) GetUserByEmail(ctx context.Context, email string) (*model.User, error) {
+	conn, err := db.db.Connx(ctx)
+	if err != nil {
+		return nil, err
+	}
+	defer conn.Close()
 	var user dbUser
 
-	if err := tr.GetContext(ctx, &user, "SELECT * FROM users WHERE email = $1", email); err != nil {
+	if err := conn.GetContext(ctx, &user, "SELECT * FROM users WHERE email = $1", email); err != nil {
 		return nil, err
 	}
 
@@ -37,11 +41,16 @@ func (db *UserPostgresStorage) GetUserByEmail(ctx context.Context, tr *sqlx.Tx, 
 	}, nil
 }
 
-func (db *UserPostgresStorage) CreateUser(ctx context.Context, tr *sqlx.Tx, input *model.RegistrationsInput) (*model.User, error) {
+func (db *UserPostgresStorage) CreateUser(ctx context.Context, input *model.RegistrationsInput) (*model.User, error) {
+	conn, err := db.db.Connx(ctx)
+	if err != nil {
+		return nil, err
+	}
+	defer conn.Close()
 
 	var user dbUser
 	newPassword, err := userFeature.HashPassword(input.Password)
-	err = tr.QueryRowContext(ctx,
+	err = conn.QueryRowContext(ctx,
 		"INSERT INTO users (name, phone, email, role, password) VALUES ($1, $2, $3, $4, $5) RETURNING users.*",
 		input.Name, input.Phone, input.Email, input.Role, newPassword).Scan(&user.ID, &user.Name, &user.CreatedAt, &user.UpdatedAt, &user.Phone, &user.Email, &user.AvatarPath, &user.Role, &user.Password)
 
@@ -62,10 +71,14 @@ func (db *UserPostgresStorage) CreateUser(ctx context.Context, tr *sqlx.Tx, inpu
 	}, nil
 }
 
-func (db *UserPostgresStorage) GetUserByPhone(ctx context.Context, tr *sqlx.Tx, phone string) (*model.User, error) {
-
+func (db *UserPostgresStorage) GetUserByPhone(ctx context.Context, phone string) (*model.User, error) {
+	conn, err := db.db.Connx(ctx)
+	if err != nil {
+		return nil, err
+	}
+	defer conn.Close()
 	var user dbUser
-	if err := tr.GetContext(ctx, &user, "SELECT * FROM users WHERE phone = $1", phone); err != nil {
+	if err := conn.GetContext(ctx, &user, "SELECT * FROM users WHERE phone = $1", phone); err != nil {
 		return nil, err
 	}
 	return &model.User{

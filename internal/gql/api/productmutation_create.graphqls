@@ -1,7 +1,7 @@
 
 
 extend type ProductMutation {
-    createProduct(input:CreateProductInput): ProductCreateResult! @goField(forceResolver: true)
+    createProduct(input:CreateProductInput): ProductCreateResult! @goField(forceResolver: true) @hasRole(role: ADMIN)
 }
 
 type ProductNotFoundProblem implements ProblemInterface {

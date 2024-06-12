@@ -10,8 +10,3 @@ type User {
     role: Role!
 }
 
-enum Role {
-    ADMIN
-    USER
-    GUEST
-}

@@ -11,6 +11,8 @@ import (
 	httpHandlers "github.com/Sanchir01/sandjma_graphql/internal/handlers"
 	httpServer "github.com/Sanchir01/sandjma_graphql/internal/server/http"
 	"github.com/Sanchir01/sandjma_graphql/pkg/lib/logger/handlers/slogpretty"
+	trmsqlx "github.com/avito-tech/go-transaction-manager/drivers/sqlx/v2"
+	"github.com/avito-tech/go-transaction-manager/trm/v2/manager"
 	"github.com/go-chi/chi/v5"
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api"
 	"github.com/jmoiron/sqlx"
@@ -21,6 +23,8 @@ import (
 	"os/signal"
 	"syscall"
 )
+
+type ctxKey int
 
 var (
 	development = "development"
@@ -39,13 +43,13 @@ func main() {
 	lg.Info("DATABASE CONNECTED", db)
 
 	defer db.Close()
-
+	trManager := manager.Must(trmsqlx.NewDefaultFactory(db))
 	r := chi.NewRouter()
 	var (
 		productStorage  = productStore.NewProductPostgresStorage(db)
 		categoryStorage = categoryStore.NewCategoryPostgresStore(db)
 		userStorages    = userStorage.NewUserPostgresStorage(db)
-		handlers        = httpHandlers.NewChiRouter(lg, cfg, r, productStorage, categoryStorage, userStorages, db)
+		handlers        = httpHandlers.NewChiRouter(lg, cfg, r, productStorage, categoryStorage, userStorages, db, trManager)
 	)
 	serve := httpServer.NewHttpServer(cfg)
 	ctx, cancel := signal.NotifyContext(context.Background(), syscall.SIGTERM, syscall.SIGINT, os.Interrupt)
@@ -61,7 +65,7 @@ func main() {
 	telegramBot := telegram.NewTgBotInitialize(bot, lg)
 
 	go func(ctx context.Context) {
-		if err := serve.Run(handlers.StartHttpHandlers()); err != nil {
+		if err := serve.Run(handlers.StartHttpServer()); err != nil {
 			if !errors.Is(err, context.Canceled) {
 				lg.Error("Listen server error", slog.String("error", err.Error()))
 				return
@@ -80,14 +84,14 @@ func main() {
 }
 
 func setupLogger(env string) *slog.Logger {
-	var log *slog.Logger
+	var lg *slog.Logger
 	switch env {
 	case development:
-		log = setupPrettySlog()
+		lg = setupPrettySlog()
 	case production:
-		log = slog.New(slog.NewJSONHandler(os.Stdout, &slog.HandlerOptions{Level: slog.LevelInfo}))
+		lg = slog.New(slog.NewJSONHandler(os.Stdout, &slog.HandlerOptions{Level: slog.LevelInfo}))
 	}
-	return log
+	return lg
 }
 
 func setupPrettySlog() *slog.Logger {

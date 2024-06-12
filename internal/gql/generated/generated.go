@@ -50,6 +50,7 @@ type ResolverRoot interface {
 }
 
 type DirectiveRoot struct {
+	HasRole       func(ctx context.Context, obj interface{}, next graphql.Resolver, role *model.Role) (res interface{}, err error)
 	InputUnion    func(ctx context.Context, obj interface{}, next graphql.Resolver) (res interface{}, err error)
 	SortRankInput func(ctx context.Context, obj interface{}, next graphql.Resolver) (res interface{}, err error)
 }
@@ -685,6 +686,14 @@ directive @goField(
     name: String
 ) on INPUT_FIELD_DEFINITION | FIELD_DEFINITION
 
+
+directive @hasRole(role:Role) on FIELD_DEFINITION
+
+enum Role {
+    ADMIN
+    USER
+    GUEST
+}
 directive @inputUnion on INPUT_FIELD_DEFINITION
 
 directive @sortRankInput on INPUT_FIELD_DEFINITION`, BuiltIn: false},
@@ -748,7 +757,7 @@ extend type Mutation {
 	{Name: "../api/categorymutation_create.graphqls", Input: `
 
 extend type CategoryMutation {
-    createCategory(input:CreateCategoryInput): CategoryCreateResult! @goField(forceResolver: true)
+    createCategory(input:CreateCategoryInput): CategoryCreateResult! @goField(forceResolver: true) @hasRole(role: ADMIN)
 }
 
 
@@ -812,7 +821,7 @@ extend type Mutation {
 	{Name: "../api/productmutation_create.graphqls", Input: `
 
 extend type ProductMutation {
-    createProduct(input:CreateProductInput): ProductCreateResult! @goField(forceResolver: true)
+    createProduct(input:CreateProductInput): ProductCreateResult! @goField(forceResolver: true) @hasRole(role: ADMIN)
 }
 
 type ProductNotFoundProblem implements ProblemInterface {
@@ -878,11 +887,7 @@ type InvalidSortRankProblem implements ProblemInterface {
     role: Role!
 }
 
-enum Role {
-    ADMIN
-    USER
-    GUEST
-}`, BuiltIn: false},
+`, BuiltIn: false},
 	{Name: "../api/version.graphqls", Input: `interface VersionInterface {
     version: UInt!
 }
@@ -896,6 +901,21 @@ var parsedSchema = gqlparser.MustLoadSchema(sources...)
 // endregion ************************** generated!.gotpl **************************
 
 // region    ***************************** args.gotpl *****************************
+
+func (ec *executionContext) dir_hasRole_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 *model.Role
+	if tmp, ok := rawArgs["role"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("role"))
+		arg0, err = ec.unmarshalORole2ᚖgithubᚗcomᚋSanchir01ᚋsandjma_graphqlᚋinternalᚋgqlᚋmodelᚐRole(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["role"] = arg0
+	return args, nil
+}
 
 func (ec *executionContext) field_AuthMutation_login_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
@@ -1560,8 +1580,32 @@ func (ec *executionContext) _CategoryMutation_createCategory(ctx context.Context
 		}
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.CategoryMutation().CreateCategory(rctx, obj, fc.Args["input"].(*model.CreateCategoryInput))
+		directive0 := func(rctx context.Context) (interface{}, error) {
+			ctx = rctx // use context from middleware stack in children
+			return ec.resolvers.CategoryMutation().CreateCategory(rctx, obj, fc.Args["input"].(*model.CreateCategoryInput))
+		}
+		directive1 := func(ctx context.Context) (interface{}, error) {
+			role, err := ec.unmarshalORole2ᚖgithubᚗcomᚋSanchir01ᚋsandjma_graphqlᚋinternalᚋgqlᚋmodelᚐRole(ctx, "ADMIN")
+			if err != nil {
+				return nil, err
+			}
+			if ec.directives.HasRole == nil {
+				return nil, errors.New("directive hasRole is not implemented")
+			}
+			return ec.directives.HasRole(ctx, obj, directive0, role)
+		}
+
+		tmp, err := directive1(rctx)
+		if err != nil {
+			return nil, graphql.ErrorOnPath(ctx, err)
+		}
+		if tmp == nil {
+			return nil, nil
+		}
+		if data, ok := tmp.(model.CategoryCreateResult); ok {
+			return data, nil
+		}
+		return nil, fmt.Errorf(`unexpected type %T from directive, should be github.com/Sanchir01/sandjma_graphql/internal/gql/model.CategoryCreateResult`, tmp)
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -2500,8 +2544,32 @@ func (ec *executionContext) _ProductMutation_createProduct(ctx context.Context, 
 		}
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.ProductMutation().CreateProduct(rctx, obj, fc.Args["input"].(*model.CreateProductInput))
+		directive0 := func(rctx context.Context) (interface{}, error) {
+			ctx = rctx // use context from middleware stack in children
+			return ec.resolvers.ProductMutation().CreateProduct(rctx, obj, fc.Args["input"].(*model.CreateProductInput))
+		}
+		directive1 := func(ctx context.Context) (interface{}, error) {
+			role, err := ec.unmarshalORole2ᚖgithubᚗcomᚋSanchir01ᚋsandjma_graphqlᚋinternalᚋgqlᚋmodelᚐRole(ctx, "ADMIN")
+			if err != nil {
+				return nil, err
+			}
+			if ec.directives.HasRole == nil {
+				return nil, errors.New("directive hasRole is not implemented")
+			}
+			return ec.directives.HasRole(ctx, obj, directive0, role)
+		}
+
+		tmp, err := directive1(rctx)
+		if err != nil {
+			return nil, graphql.ErrorOnPath(ctx, err)
+		}
+		if tmp == nil {
+			return nil, nil
+		}
+		if data, ok := tmp.(model.ProductCreateResult); ok {
+			return data, nil
+		}
+		return nil, fmt.Errorf(`unexpected type %T from directive, should be github.com/Sanchir01/sandjma_graphql/internal/gql/model.ProductCreateResult`, tmp)
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -7758,6 +7826,22 @@ func (ec *executionContext) unmarshalORegistrationsInput2ᚖgithubᚗcomᚋSanch
 	}
 	res, err := ec.unmarshalInputRegistrationsInput(ctx, v)
 	return &res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) unmarshalORole2ᚖgithubᚗcomᚋSanchir01ᚋsandjma_graphqlᚋinternalᚋgqlᚋmodelᚐRole(ctx context.Context, v interface{}) (*model.Role, error) {
+	if v == nil {
+		return nil, nil
+	}
+	var res = new(model.Role)
+	err := res.UnmarshalGQL(v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalORole2ᚖgithubᚗcomᚋSanchir01ᚋsandjma_graphqlᚋinternalᚋgqlᚋmodelᚐRole(ctx context.Context, sel ast.SelectionSet, v *model.Role) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	return v
 }
 
 func (ec *executionContext) unmarshalOString2ᚕstringᚄ(ctx context.Context, v interface{}) ([]string, error) {
