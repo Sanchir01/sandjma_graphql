@@ -5,3 +5,6 @@ interface ProblemInterface {
 type InternalErrorProblem implements ProblemInterface {
     message: String!
 }
+type UnauthorizedProblem implements VersionInterface{
+    message:String
+}

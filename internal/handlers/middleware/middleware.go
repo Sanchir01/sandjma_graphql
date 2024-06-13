@@ -1,47 +1,74 @@
-package middleware
+package customMiddleware
 
 import (
 	"context"
+	"errors"
+	userFeature "github.com/Sanchir01/sandjma_graphql/internal/feature/user"
+	"log/slog"
 	"net/http"
 )
 
-type injectableResponseWriter struct {
-	http.ResponseWriter
-	Cookie *http.Cookie
-}
+const responseWriterKey = "responseWriter"
 
-func (i *injectableResponseWriter) Write(data []byte) (int, error) {
-	if i.Cookie != nil {
-		http.SetCookie(i.ResponseWriter, i.Cookie)
-	}
-
-	return i.ResponseWriter.Write(data)
-}
-
-func SomeMiddleware(someParam string, inner http.Handler) http.Handler {
+func AuthMiddleware() func(http.Handler) http.Handler {
 	return func(next http.Handler) http.Handler {
-		return http.HandlerFunc(func(res http.ResponseWriter, req *http.Request) {
-			ctx := req.Context()
-
-			// pull cookie from request
-			cookie, err := req.Cookie("refreshToken")
-
-			// since err can only return ErrNoCookie lets only add cookie to
-			// context if the err is nil.
-			if err == nil && cookie != nil {
-				ctx = context.WithValue(
-					ctx,
-					"COOKIE_VALUE",
-					cookie,
-				)
+		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			access, err := r.Cookie("accessToken")
+			if err != nil {
+				refresh, err := r.Cookie("refreshToken")
+				if err != nil {
+					slog.Warn("no access token", refresh)
+					next.ServeHTTP(w, r)
+					return
+				}
+				accessToken, err := userFeature.NewAccessToken(refresh.Value, 0, w)
+				if err != nil {
+					next.ServeHTTP(w, r)
+					return
+				}
+				token, err := userFeature.ParseToken(accessToken)
+				if err != nil {
+					next.ServeHTTP(w, r)
+					return
+				}
+				ctx := context.WithValue(r.Context(), "user", token)
+				next.ServeHTTP(w, r.WithContext(ctx))
+				return
 			}
 
-			// add writer pointer for returnable cookies
-			cres := injectableResponseWriter{ResponseWriter: res}
-			ctx = context.WithValue(ctx, "RESPONSE_WRITER", &cres)
-
-			// pass request on with injected writer and cookie value
-			next.ServeHTTP(&cres, req.WithContext(ctx))
+			_, err = userFeature.ParseToken(access.Value)
+			if err != nil {
+				next.ServeHTTP(w, r)
+				return
+			}
+			// Проверка валидности токена
+			validAccessToken, err := userFeature.ParseToken(access.Value)
+			if err != nil {
+				slog.Warn("invalid access token", access)
+				next.ServeHTTP(w, r)
+				return
+			}
+			ctx := context.WithValue(r.Context(), "user", validAccessToken)
+			slog.Warn("valid access token", validAccessToken)
+			next.ServeHTTP(w, r.WithContext(ctx))
 		})
-	}(inner)
+	}
+}
+
+func GetJWTClaimsFromCtx(ctx context.Context) (*userFeature.Claims, error) {
+	claims, ok := ctx.Value("user").(*userFeature.Claims)
+	if !ok {
+		return nil, errors.New("no JWT claims found in context")
+	}
+	return claims, nil
+}
+
+func WithResponseWriter(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		ctx := context.WithValue(r.Context(), responseWriterKey, w)
+		next.ServeHTTP(w, r.WithContext(ctx))
+	})
+}
+func GetResponseWriter(ctx context.Context) http.ResponseWriter {
+	return ctx.Value(responseWriterKey).(http.ResponseWriter)
 }

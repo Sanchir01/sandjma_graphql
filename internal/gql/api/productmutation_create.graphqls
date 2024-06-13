@@ -22,3 +22,4 @@ union ProductCreateResult =
     | InvalidSortRankProblem
     | InternalErrorProblem
     | ProductCreateOk
+    | UnauthorizedProblem

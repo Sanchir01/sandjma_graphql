@@ -16,8 +16,10 @@ import (
 	"github.com/Sanchir01/sandjma_graphql/internal/gql/directive"
 	runtime "github.com/Sanchir01/sandjma_graphql/internal/gql/generated"
 	resolver "github.com/Sanchir01/sandjma_graphql/internal/gql/resolvers"
+	customMiddleware "github.com/Sanchir01/sandjma_graphql/internal/handlers/middleware"
 	"github.com/avito-tech/go-transaction-manager/trm/v2/manager"
 	"github.com/go-chi/chi/v5"
+	"github.com/go-chi/chi/v5/middleware"
 	"github.com/go-chi/cors"
 	"github.com/jmoiron/sqlx"
 	"github.com/vektah/gqlparser/v2/gqlerror"
@@ -61,6 +63,10 @@ func NewChiRouter(
 
 func (rout *Router) StartHttpServer() http.Handler {
 	rout.newChiCors()
+	rout.chiRouter.Use(middleware.RequestID)
+	rout.chiRouter.Use(customMiddleware.WithResponseWriter)
+	rout.chiRouter.Use(customMiddleware.AuthMiddleware())
+
 	rout.chiRouter.Handle("/graphql", playground.ApolloSandboxHandler("Sandjma", "/"))
 	rout.chiRouter.Handle("/", rout.NewGraphQLHandler())
 

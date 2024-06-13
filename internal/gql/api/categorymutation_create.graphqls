@@ -18,4 +18,4 @@ type CategoryCreateOk {
     Id:Uuid!
 }
 
-union CategoryCreateResult = |CategoryCreateOk |CategoryNotFoundProblem |  InternalErrorProblem
+union CategoryCreateResult = |CategoryCreateOk |CategoryNotFoundProblem |  InternalErrorProblem | UnauthorizedProblem

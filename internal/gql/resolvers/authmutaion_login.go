@@ -6,12 +6,21 @@ package resolver
 
 import (
 	"context"
-	"fmt"
-
 	"github.com/Sanchir01/sandjma_graphql/internal/gql/model"
+	customMiddleware "github.com/Sanchir01/sandjma_graphql/internal/handlers/middleware"
+	"github.com/Sanchir01/sandjma_graphql/pkg/lib/api/response"
+	"log/slog"
 )
 
 // Login is the resolver for the login field.
 func (r *authMutationResolver) Login(ctx context.Context, obj *model.AuthMutation, input *model.LoginInput) (model.LoginResult, error) {
-	panic(fmt.Errorf("not implemented: Login - login"))
+	claims, err := customMiddleware.GetJWTClaimsFromCtx(ctx)
+
+	if claims != nil {
+		return nil, nil
+	}
+	if err != nil {
+		r.Logger.Error("GetAllCategory error", slog.String("error", err.Error()))
+		return response.NewInternalErrorProblem("error for get all category db"), nil
+	}
 }
