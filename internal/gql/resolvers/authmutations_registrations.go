@@ -6,20 +6,15 @@ package resolver
 
 import (
 	"context"
+	customMiddleware "github.com/Sanchir01/sandjma_graphql/internal/handlers/middleware"
+
 	userFeature "github.com/Sanchir01/sandjma_graphql/internal/feature/user"
 	"github.com/Sanchir01/sandjma_graphql/internal/gql/model"
-	customMiddleware "github.com/Sanchir01/sandjma_graphql/internal/handlers/middleware"
 	"github.com/Sanchir01/sandjma_graphql/pkg/lib/api/response"
 )
 
-type ctxKeyResponseWriter struct{}
-
 // Registration is the resolver for the registration field.
 func (r *authMutationResolver) Registration(ctx context.Context, obj *model.AuthMutation, input *model.RegistrationsInput) (model.RegistrationsResult, error) {
-	claims, err := customMiddleware.GetJWTClaimsFromCtx(ctx)
-	if claims != nil {
-		return response.NewInternalErrorProblem("User not found"), nil
-	}
 
 	userPhone, _ := r.UserStr.GetUserByPhone(ctx, input.Phone)
 
@@ -39,7 +34,6 @@ func (r *authMutationResolver) Registration(ctx context.Context, obj *model.Auth
 		return response.NewInternalErrorProblem("Error for creating new user"), nil
 	}
 	w := customMiddleware.GetResponseWriter(ctx)
-
 	if err = userFeature.AddCookieTokens(newUser.ID, newUser.Role, w); err != nil {
 		r.Logger.Warn("errors generating jwt", err)
 		return response.NewInternalErrorProblem("Error for generating jwt"), nil
@@ -47,3 +41,11 @@ func (r *authMutationResolver) Registration(ctx context.Context, obj *model.Auth
 
 	return model.RegistrationsResultOk{User: newUser}, nil
 }
+
+// !!! WARNING !!!
+// The code below was going to be deleted when updating resolvers. It has been copied here so you have
+// one last chance to move it out of harms way if you want. There are two reasons this happens:
+//   - When renaming or deleting a resolver the old code will be put in here. You can safely delete
+//     it when you're done.
+//   - You have helper methods in this file. Move them out to keep these resolver files clean.
+type ctxKeyResponseWriter struct{}

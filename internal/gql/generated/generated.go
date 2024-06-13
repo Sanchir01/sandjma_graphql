@@ -150,6 +150,10 @@ type ComplexityRoot struct {
 		User func(childComplexity int) int
 	}
 
+	UnauthorizedProblem struct {
+		Message func(childComplexity int) int
+	}
+
 	User struct {
 		AvatarPath func(childComplexity int) int
 		CreatedAt  func(childComplexity int) int
@@ -496,6 +500,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.RegistrationsResultOk.User(childComplexity), true
 
+	case "UnauthorizedProblem.message":
+		if e.complexity.UnauthorizedProblem.Message == nil {
+			break
+		}
+
+		return e.complexity.UnauthorizedProblem.Message(childComplexity), true
+
 	case "User.avatar_path":
 		if e.complexity.User.AvatarPath == nil {
 			break
@@ -774,7 +785,7 @@ type CategoryCreateOk {
     Id:Uuid!
 }
 
-union CategoryCreateResult = |CategoryCreateOk |CategoryNotFoundProblem |  InternalErrorProblem`, BuiltIn: false},
+union CategoryCreateResult = |CategoryCreateOk |CategoryNotFoundProblem |  InternalErrorProblem | UnauthorizedProblem`, BuiltIn: false},
 	{Name: "../api/categoryquery.graphqls", Input: `type CategoryQuery
 
 extend type Query {
@@ -801,6 +812,9 @@ union CategoryGetAllResult = | CategoryGetAllOk |InternalErrorProblem |CategoryN
 
 type InternalErrorProblem implements ProblemInterface {
     message: String!
+}
+type UnauthorizedProblem implements ProblemInterface{
+    message:String!
 }
 `, BuiltIn: false},
 	{Name: "../api/product.graphqls", Input: `type Product {
@@ -842,6 +856,7 @@ union ProductCreateResult =
     | InvalidSortRankProblem
     | InternalErrorProblem
     | ProductCreateOk
+    | UnauthorizedProblem
 `, BuiltIn: false},
 	{Name: "../api/productquery.graphqls", Input: `type ProductQuery
 
@@ -2990,6 +3005,50 @@ func (ec *executionContext) fieldContext_RegistrationsResultOk_user(_ context.Co
 				return ec.fieldContext_User_role(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type User", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _UnauthorizedProblem_message(ctx context.Context, field graphql.CollectedField, obj *model.UnauthorizedProblem) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_UnauthorizedProblem_message(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Message, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_UnauthorizedProblem_message(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "UnauthorizedProblem",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
 		},
 	}
 	return fc, nil
@@ -5442,6 +5501,13 @@ func (ec *executionContext) _CategoryCreateResult(ctx context.Context, sel ast.S
 			return graphql.Null
 		}
 		return ec._InternalErrorProblem(ctx, sel, obj)
+	case model.UnauthorizedProblem:
+		return ec._UnauthorizedProblem(ctx, sel, &obj)
+	case *model.UnauthorizedProblem:
+		if obj == nil {
+			return graphql.Null
+		}
+		return ec._UnauthorizedProblem(ctx, sel, obj)
 	case model.CategoryCreateOk:
 		return ec._CategoryCreateOk(ctx, sel, &obj)
 	case *model.CategoryCreateOk:
@@ -5548,6 +5614,13 @@ func (ec *executionContext) _ProblemInterface(ctx context.Context, sel ast.Selec
 			return graphql.Null
 		}
 		return ec._InternalErrorProblem(ctx, sel, obj)
+	case model.UnauthorizedProblem:
+		return ec._UnauthorizedProblem(ctx, sel, &obj)
+	case *model.UnauthorizedProblem:
+		if obj == nil {
+			return graphql.Null
+		}
+		return ec._UnauthorizedProblem(ctx, sel, obj)
 	case model.ProductNotFoundProblem:
 		return ec._ProductNotFoundProblem(ctx, sel, &obj)
 	case *model.ProductNotFoundProblem:
@@ -5599,6 +5672,13 @@ func (ec *executionContext) _ProductCreateResult(ctx context.Context, sel ast.Se
 			return graphql.Null
 		}
 		return ec._InternalErrorProblem(ctx, sel, obj)
+	case model.UnauthorizedProblem:
+		return ec._UnauthorizedProblem(ctx, sel, &obj)
+	case *model.UnauthorizedProblem:
+		if obj == nil {
+			return graphql.Null
+		}
+		return ec._UnauthorizedProblem(ctx, sel, obj)
 	case model.ProductCreateOk:
 		return ec._ProductCreateOk(ctx, sel, &obj)
 	case *model.ProductCreateOk:
@@ -6703,6 +6783,45 @@ func (ec *executionContext) _RegistrationsResultOk(ctx context.Context, sel ast.
 			out.Values[i] = graphql.MarshalString("RegistrationsResultOk")
 		case "user":
 			out.Values[i] = ec._RegistrationsResultOk_user(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
+		return graphql.Null
+	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
+	return out
+}
+
+var unauthorizedProblemImplementors = []string{"UnauthorizedProblem", "CategoryCreateResult", "ProblemInterface", "ProductCreateResult"}
+
+func (ec *executionContext) _UnauthorizedProblem(ctx context.Context, sel ast.SelectionSet, obj *model.UnauthorizedProblem) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, unauthorizedProblemImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	deferred := make(map[string]*graphql.FieldSet)
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("UnauthorizedProblem")
+		case "message":
+			out.Values[i] = ec._UnauthorizedProblem_message(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				out.Invalids++
 			}

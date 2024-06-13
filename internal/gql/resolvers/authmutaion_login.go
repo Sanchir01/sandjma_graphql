@@ -6,21 +6,23 @@ package resolver
 
 import (
 	"context"
+	userFeature "github.com/Sanchir01/sandjma_graphql/internal/feature/user"
 	"github.com/Sanchir01/sandjma_graphql/internal/gql/model"
 	customMiddleware "github.com/Sanchir01/sandjma_graphql/internal/handlers/middleware"
 	"github.com/Sanchir01/sandjma_graphql/pkg/lib/api/response"
-	"log/slog"
 )
 
 // Login is the resolver for the login field.
 func (r *authMutationResolver) Login(ctx context.Context, obj *model.AuthMutation, input *model.LoginInput) (model.LoginResult, error) {
-	claims, err := customMiddleware.GetJWTClaimsFromCtx(ctx)
-
-	if claims != nil {
-		return nil, nil
-	}
+	user, err := r.UserStr.GetUserByPhone(ctx, input.Phone)
 	if err != nil {
-		r.Logger.Error("GetAllCategory error", slog.String("error", err.Error()))
-		return response.NewInternalErrorProblem("error for get all category db"), nil
+		return response.NewInternalErrorProblem("неправильный телефон или пароль"), nil
 	}
+	r.Logger.Info("user", user)
+	w := customMiddleware.GetResponseWriter(ctx)
+	if err = userFeature.AddCookieTokens(user.ID, user.Role, w); err != nil {
+		r.Logger.Warn("errors generating jwt", err)
+		return response.NewInternalErrorProblem("Error for generating jwt"), nil
+	}
+	return model.LoginResultOk{User: user}, nil
 }

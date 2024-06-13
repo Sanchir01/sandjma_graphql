@@ -211,6 +211,17 @@ type SortRankInput struct {
 	Next string `json:"next"`
 }
 
+type UnauthorizedProblem struct {
+	Message string `json:"message"`
+}
+
+func (UnauthorizedProblem) IsCategoryCreateResult() {}
+
+func (UnauthorizedProblem) IsProblemInterface()     {}
+func (this UnauthorizedProblem) GetMessage() string { return this.Message }
+
+func (UnauthorizedProblem) IsProductCreateResult() {}
+
 type User struct {
 	ID         uuid.UUID `json:"id"`
 	Name       string    `json:"name"`
