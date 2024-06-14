@@ -28,6 +28,7 @@ func (p *ProductPostgresStorage) GetAllProducts(ctx context.Context) ([]model.Pr
 	if err = conn.SelectContext(ctx, &products, "SELECT * FROM products"); err != nil {
 		return nil, err
 	}
+
 	return lo.Map(products, func(products dbProduct, _ int) model.Product { return model.Product(products) }), nil
 
 }
@@ -57,9 +58,10 @@ func (p *ProductPostgresStorage) CreateProduct(ctx context.Context, input *model
 }
 
 type dbProduct struct {
-	ID          uuid.UUID `db:"id"`
-	Name        string    `db:"name"`
-	Price       int       `db:"price"`
+	ID    uuid.UUID `db:"id"`
+	Name  string    `db:"name"`
+	Price int       `db:"price"`
+
 	CreatedAt   time.Time `db:"created_at"`
 	UpdatedAt   time.Time `db:"updated_at"`
 	CategoryID  uuid.UUID `db:"category_id"`

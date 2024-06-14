@@ -4,7 +4,6 @@ import (
 	"context"
 	"errors"
 	userFeature "github.com/Sanchir01/sandjma_graphql/internal/feature/user"
-	"log/slog"
 	"net/http"
 )
 
@@ -17,7 +16,6 @@ func AuthMiddleware() func(http.Handler) http.Handler {
 			if err != nil {
 				refresh, err := r.Cookie("refreshToken")
 				if err != nil {
-					slog.Warn("no access token", refresh)
 					next.ServeHTTP(w, r)
 					return
 				}
@@ -44,12 +42,12 @@ func AuthMiddleware() func(http.Handler) http.Handler {
 			// Проверка валидности токена
 			validAccessToken, err := userFeature.ParseToken(access.Value)
 			if err != nil {
-				slog.Warn("invalid access token", access)
+
 				next.ServeHTTP(w, r)
 				return
 			}
 			ctx := context.WithValue(r.Context(), "user", validAccessToken)
-			slog.Warn("valid access token", validAccessToken)
+
 			next.ServeHTTP(w, r.WithContext(ctx))
 		})
 	}

@@ -3,7 +3,7 @@ module github.com/Sanchir01/sandjma_graphql
 go 1.22.3
 
 require (
-	github.com/99designs/gqlgen v0.17.48
+	github.com/99designs/gqlgen v0.17.49
 	github.com/avito-tech/go-transaction-manager/drivers/sqlx/v2 v2.0.0-rc8
 	github.com/avito-tech/go-transaction-manager/trm/v2 v2.0.0-rc8
 	github.com/fatih/color v1.17.0
@@ -18,8 +18,8 @@ require (
 	github.com/joho/godotenv v1.5.1
 	github.com/lib/pq v1.10.9
 	github.com/samber/lo v1.39.0
-	github.com/vektah/gqlparser/v2 v2.5.12
-	golang.org/x/crypto v0.23.0
+	github.com/vektah/gqlparser/v2 v2.5.16
+	golang.org/x/crypto v0.24.0
 	golang.org/x/exp v0.0.0-20240506185415-9bf2ced13842
 )
 
@@ -40,9 +40,9 @@ require (
 	github.com/technoweenie/multipartstreamer v1.0.1 // indirect
 	go.uber.org/atomic v1.7.0 // indirect
 	go.uber.org/multierr v1.9.0 // indirect
-	golang.org/x/net v0.25.0 // indirect
-	golang.org/x/sys v0.20.0 // indirect
-	golang.org/x/text v0.15.0 // indirect
+	golang.org/x/net v0.26.0 // indirect
+	golang.org/x/sys v0.21.0 // indirect
+	golang.org/x/text v0.16.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 	olympos.io/encoding/edn v0.0.0-20201019073823-d3554ca0b0a3 // indirect
 )

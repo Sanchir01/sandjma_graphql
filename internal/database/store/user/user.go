@@ -17,30 +17,6 @@ func NewUserPostgresStorage(db *sqlx.DB) *UserPostgresStorage {
 	return &UserPostgresStorage{db: db}
 }
 
-func (db *UserPostgresStorage) GetUserByEmail(ctx context.Context, email string) (*model.User, error) {
-	conn, err := db.db.Connx(ctx)
-	if err != nil {
-		return nil, err
-	}
-	defer conn.Close()
-	var user dbUser
-
-	if err := conn.GetContext(ctx, &user, "SELECT * FROM users WHERE email = $1", email); err != nil {
-		return nil, err
-	}
-
-	return &model.User{
-		ID:         user.ID,
-		Name:       user.Name,
-		Phone:      user.Phone,
-		Email:      user.Email,
-		Role:       model.Role(user.Role),
-		CreatedAt:  user.CreatedAt,
-		UpdatedAt:  user.UpdatedAt,
-		AvatarPath: user.AvatarPath, // Путь б
-	}, nil
-}
-
 func (db *UserPostgresStorage) CreateUser(ctx context.Context, input *model.RegistrationsInput) (*model.User, error) {
 	conn, err := db.db.Connx(ctx)
 	if err != nil {
@@ -71,6 +47,30 @@ func (db *UserPostgresStorage) CreateUser(ctx context.Context, input *model.Regi
 	}, nil
 }
 
+func (db *UserPostgresStorage) GetUserByEmail(ctx context.Context, email string) (*model.User, error) {
+	conn, err := db.db.Connx(ctx)
+	if err != nil {
+		return nil, err
+	}
+	defer conn.Close()
+	var user dbUser
+
+	if err := conn.SelectContext(ctx, &user, "SELECT * FROM users WHERE email = $1", email); err != nil {
+		return nil, err
+	}
+
+	return &model.User{
+		ID:         user.ID,
+		Name:       user.Name,
+		Phone:      user.Phone,
+		Email:      user.Email,
+		Role:       model.Role(user.Role),
+		CreatedAt:  user.CreatedAt,
+		UpdatedAt:  user.UpdatedAt,
+		AvatarPath: user.AvatarPath, // Путь б
+	}, nil
+}
+
 func (db *UserPostgresStorage) GetUserByPhone(ctx context.Context, phone string) (*model.User, error) {
 	conn, err := db.db.Connx(ctx)
 	if err != nil {
@@ -78,7 +78,7 @@ func (db *UserPostgresStorage) GetUserByPhone(ctx context.Context, phone string)
 	}
 	defer conn.Close()
 	var user dbUser
-	if err := conn.GetContext(ctx, &user, "SELECT * FROM users WHERE phone = $1", phone); err != nil {
+	if err := conn.SelectContext(ctx, &user, "SELECT * FROM users WHERE phone = $1", phone); err != nil {
 		return nil, err
 	}
 	return &model.User{
@@ -86,6 +86,7 @@ func (db *UserPostgresStorage) GetUserByPhone(ctx context.Context, phone string)
 		Name:       user.Name,
 		Phone:      user.Phone,
 		Email:      user.Email,
+		Password:   user.Password,
 		Role:       model.Role(user.Role),
 		CreatedAt:  user.CreatedAt,
 		UpdatedAt:  user.UpdatedAt,

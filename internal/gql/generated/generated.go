@@ -821,6 +821,7 @@ type UnauthorizedProblem implements ProblemInterface{
     id:Uuid!
     name:String!
     price: Int!
+
     created_at: DateTime!
     updated_at: DateTime!
     category_id: Uuid!
