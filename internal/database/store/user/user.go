@@ -25,7 +25,7 @@ func (db *UserPostgresStorage) CreateUser(ctx context.Context, input *model.Regi
 	defer conn.Close()
 
 	var user dbUser
-	newPassword, err := userFeature.HashPassword(input.Password)
+	newPassword := userFeature.GeneratePasswordHash(input.Password)
 	err = conn.QueryRowContext(ctx,
 		"INSERT INTO users (name, phone, email, role, password) VALUES ($1, $2, $3, $4, $5) RETURNING users.*",
 		input.Name, input.Phone, input.Email, input.Role, newPassword).Scan(&user.ID, &user.Name, &user.CreatedAt, &user.UpdatedAt, &user.Phone, &user.Email, &user.AvatarPath, &user.Role, &user.Password)
@@ -55,7 +55,7 @@ func (db *UserPostgresStorage) GetUserByEmail(ctx context.Context, email string)
 	defer conn.Close()
 	var user dbUser
 
-	if err := conn.SelectContext(ctx, &user, "SELECT * FROM users WHERE email = $1", email); err != nil {
+	if err := conn.GetContext(ctx, &user, "SELECT * FROM users WHERE email = $1", email); err != nil {
 		return nil, err
 	}
 
@@ -78,7 +78,7 @@ func (db *UserPostgresStorage) GetUserByPhone(ctx context.Context, phone string)
 	}
 	defer conn.Close()
 	var user dbUser
-	if err := conn.SelectContext(ctx, &user, "SELECT * FROM users WHERE phone = $1", phone); err != nil {
+	if err := conn.GetContext(ctx, &user, "SELECT * FROM users WHERE phone = $1", phone); err != nil {
 		return nil, err
 	}
 	return &model.User{

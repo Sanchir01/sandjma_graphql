@@ -12,4 +12,4 @@ type LoginResultOk {
     user:User!
 }
 
-union LoginResult = | LoginResultOk |InternalErrorProblem
+union LoginResult = | LoginResultOk | InternalErrorProblem

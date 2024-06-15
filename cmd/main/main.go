@@ -45,12 +45,15 @@ func main() {
 	defer db.Close()
 	trManager := manager.Must(trmsqlx.NewDefaultFactory(db))
 	r := chi.NewRouter()
+
 	var (
 		productStorage  = productStore.NewProductPostgresStorage(db)
 		categoryStorage = categoryStore.NewCategoryPostgresStore(db)
 		userStorages    = userStorage.NewUserPostgresStorage(db)
 		handlers        = httpHandlers.NewChiRouter(lg, cfg, r, productStorage, categoryStorage, userStorages, db, trManager)
 	)
+	allPr, err := productStorage.GetAllProducts(context.Background())
+	lg.Warn("all products", allPr)
 	serve := httpServer.NewHttpServer(cfg)
 	ctx, cancel := signal.NotifyContext(context.Background(), syscall.SIGTERM, syscall.SIGINT, os.Interrupt)
 

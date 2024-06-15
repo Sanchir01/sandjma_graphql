@@ -13,6 +13,7 @@ input CreateProductInput {
     description:String!
     price: Int!
     categoryId:Uuid!
+    images:[String!]!
 }
 type ProductCreateOk {
     products:Uuid!

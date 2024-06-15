@@ -159,6 +159,7 @@ type Product struct {
 	ID          uuid.UUID `json:"id"`
 	Name        string    `json:"name"`
 	Price       int       `json:"price"`
+	Images      []string  `json:"images"`
 	CreatedAt   time.Time `json:"created_at"`
 	UpdatedAt   time.Time `json:"updated_at"`
 	CategoryID  uuid.UUID `json:"category_id"`

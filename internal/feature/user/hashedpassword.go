@@ -1,19 +1,18 @@
 package userFeature
 
 import (
-	"golang.org/x/crypto/bcrypt"
-	"log/slog"
+	"crypto/subtle"
+	"encoding/base64"
+	"golang.org/x/crypto/argon2"
 )
 
-func HashPassword(password string) (string, error) {
-	bytes, err := bcrypt.GenerateFromPassword([]byte(password), 14)
-	if err != nil {
-		slog.Error("error generate hash password", err.Error())
-		return "", err
-	}
-	return string(bytes), nil
+func GeneratePasswordHash(password string) string {
+	salt := make([]byte, 16)
+	hash := argon2.IDKey([]byte(password), salt, 1, 64*1024, 4, 32)
+	return base64.RawStdEncoding.EncodeToString(hash)
 }
-func CheckPasswordHash(password, hash string) error {
-	err := bcrypt.CompareHashAndPassword([]byte(hash), []byte(password))
-	return err
+
+func VerifyPassword(password, hash string) bool {
+	hashedPassword := GeneratePasswordHash(password)
+	return subtle.ConstantTimeCompare([]byte(hashedPassword), []byte(hash)) == 1
 }

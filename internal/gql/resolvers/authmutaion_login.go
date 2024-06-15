@@ -21,8 +21,8 @@ func (r *authMutationResolver) Login(ctx context.Context, obj *model.AuthMutatio
 		return response.NewInternalErrorProblem("неправильный телефон"), nil
 	}
 
-	err = userFeature.CheckPasswordHash(input.Password, user.Password)
-	if err != nil {
+	isValid := userFeature.VerifyPassword(input.Password, user.Password)
+	if isValid == false {
 		return response.NewInternalErrorProblem("неправильный пароль"), nil
 	}
 
