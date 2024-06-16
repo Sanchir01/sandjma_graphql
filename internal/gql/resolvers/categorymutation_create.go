@@ -6,12 +6,21 @@ package resolver
 
 import (
 	"context"
-	"fmt"
 
 	"github.com/Sanchir01/sandjma_graphql/internal/gql/model"
+	"github.com/Sanchir01/sandjma_graphql/pkg/lib/api/response"
+	"github.com/Sanchir01/sandjma_graphql/pkg/lib/utils"
 )
 
 // CreateCategory is the resolver for the createCategory field.
 func (r *categoryMutationResolver) CreateCategory(ctx context.Context, obj *model.CategoryMutation, input *model.CreateCategoryInput) (model.CategoryCreateResult, error) {
-	panic(fmt.Errorf("not implemented: CreateCategory - createCategory"))
+	newSlug, err := utils.Slugify(input.Name)
+	if err != nil {
+		return response.NewInternalErrorProblem("sads"), err
+	}
+	id, err := r.CategoryStr.CreateCategory(ctx, input, newSlug)
+	if err != nil {
+		return response.NewInternalErrorProblem("sads"), err
+	}
+	return model.CategoryCreateOk{ID: id}, nil
 }

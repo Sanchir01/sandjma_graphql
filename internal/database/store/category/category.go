@@ -33,16 +33,6 @@ func (db *CategoryPostgresStore) GetAllCategory(ctx context.Context) ([]model.Ca
 	return lo.Map(category, func(category dbCategory, _ int) model.Category { return model.Category(category) }), nil
 }
 
-type dbCategory struct {
-	ID          uuid.UUID `db:"id"`
-	Name        string    `db:"name"`
-	Slug        string    `db:"slug"`
-	CreatedAt   time.Time `db:"created_at"`
-	UpdatedAt   time.Time `db:"updated_at"`
-	Description string    `db:"description"`
-	Version     uint      `db:"version"`
-}
-
 func (db *CategoryPostgresStore) CreateCategory(ctx context.Context, input *model.CreateCategoryInput, slug string) (uuid.UUID, error) {
 	conn, err := db.db.Connx(ctx)
 	if err != nil {
@@ -61,4 +51,14 @@ func (db *CategoryPostgresStore) CreateCategory(ctx context.Context, input *mode
 		return uuid.New(), err
 	}
 	return id, nil
+}
+
+type dbCategory struct {
+	ID          uuid.UUID `db:"id"`
+	Name        string    `db:"name"`
+	Slug        string    `db:"slug"`
+	CreatedAt   time.Time `db:"created_at"`
+	UpdatedAt   time.Time `db:"updated_at"`
+	Description string    `db:"description"`
+	Version     uint      `db:"version"`
 }

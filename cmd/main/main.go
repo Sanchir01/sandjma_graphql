@@ -52,8 +52,21 @@ func main() {
 		userStorages    = userStorage.NewUserPostgresStorage(db)
 		handlers        = httpHandlers.NewChiRouter(lg, cfg, r, productStorage, categoryStorage, userStorages, db, trManager)
 	)
-	allPr, err := productStorage.GetAllProducts(context.Background())
-	lg.Warn("all products", allPr)
+	//id, err := productStorage.CreateProduct(context.Background(), &model.CreateProductInput{
+	//	Name:        "just",
+	//	Description: "test",
+	//	Price:       123,
+	//	CategoryID:  uuid.MustParse("3445eef1-4db1-4bcf-b8e5-c7a46d8b2443"),
+	//	Images: []string{
+	//		"https://www.google.com/url?sa=i&url=https%3A%2F%2Fwww.vogue.ru%2Ffashion%2F7-idej-verhnej-odezhdy-dlya-holodnyh-dnej&psig=AOvVaw0MgOiFOmhl84KWrrlYzjF8&ust=1718541447417000&source=images&cd=vfe&opi=89978449&ved=0CBEQjRxqFwoTCMiDzvXP3YYDFQAAAAAdAAAAABAE",
+	//		"https://www.google.com/url?sa=i&url=https%3A%2F%2Fwww.xn--e1agsbgdeid7b.xn--p1ai%2Farticles%2Fuhod-za-odezhdoj%2Fkak-ubrat-staticheskoe-elektrichestvo-s-odezhdy%2F&psig=AOvVaw0MgOiFOmhl84KWrrlYzjF8&ust=1718541447417000&source=images&cd=vfe&opi=89978449&ved=0CBEQjRxqFwoTCMiDzvXP3YYDFQAAAAAdAAAAABAI",
+	//	},
+	//},
+	//)
+	//if err != nil {
+	//	lg.Error("productStorage.CreateProduct error", slog.String("error", err.Error()))
+	//}
+	//lg.Warn("ID", slog.String("id", id.String()))
 	serve := httpServer.NewHttpServer(cfg)
 	ctx, cancel := signal.NotifyContext(context.Background(), syscall.SIGTERM, syscall.SIGINT, os.Interrupt)
 

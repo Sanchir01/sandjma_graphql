@@ -2,7 +2,6 @@ package httpHandlers
 
 import (
 	"context"
-	"fmt"
 	gqlhandler "github.com/99designs/gqlgen/graphql/handler"
 	"github.com/99designs/gqlgen/graphql/handler/extension"
 	"github.com/99designs/gqlgen/graphql/handler/lru"
@@ -14,7 +13,7 @@ import (
 	storage "github.com/Sanchir01/sandjma_graphql/internal/database/store/product"
 	userStorage "github.com/Sanchir01/sandjma_graphql/internal/database/store/user"
 	"github.com/Sanchir01/sandjma_graphql/internal/gql/directive"
-	runtime "github.com/Sanchir01/sandjma_graphql/internal/gql/generated"
+	genGql "github.com/Sanchir01/sandjma_graphql/internal/gql/generated"
 	resolver "github.com/Sanchir01/sandjma_graphql/internal/gql/resolvers"
 	customMiddleware "github.com/Sanchir01/sandjma_graphql/internal/handlers/middleware"
 	"github.com/avito-tech/go-transaction-manager/trm/v2/manager"
@@ -23,8 +22,10 @@ import (
 	"github.com/go-chi/cors"
 	"github.com/jmoiron/sqlx"
 	"github.com/vektah/gqlparser/v2/gqlerror"
+	"log"
 	"log/slog"
 	"net/http"
+	"runtime"
 )
 
 type Router struct {
@@ -76,7 +77,7 @@ func (rout *Router) StartHttpServer() http.Handler {
 func (rout *Router) NewGraphQLHandler() *gqlhandler.Server {
 
 	srv := gqlhandler.New(
-		runtime.NewExecutableSchema(rout.newSchemaConfig()),
+		genGql.NewExecutableSchema(rout.newSchemaConfig()),
 	)
 	srv.AddTransport(transport.POST{})
 	srv.AddTransport(transport.Options{})
@@ -89,18 +90,23 @@ func (rout *Router) NewGraphQLHandler() *gqlhandler.Server {
 	srv.Use(extension.AutomaticPersistedQuery{Cache: lru.New(automaticPersistedQueryCacheLRUSize)})
 
 	srv.SetRecoverFunc(func(ctx context.Context, err interface{}) (userMessage error) {
-		rout.lg.Error("unhandled error", slog.String("error", fmt.Sprintf("%v", err)))
+		buf := make([]byte, 1024)
+		n := runtime.Stack(buf, false)
+		log.Printf("Panic: %v\nStack: %s\n", err, buf[:n])
 
-		return gqlerror.Errorf("internal server error")
+		return gqlerror.Errorf("internal server error graphql обработка паники")
 	})
 	srv.Use(extension.FixedComplexityLimit(complexityLimit))
 
 	return srv
 }
 
-func (rout *Router) newSchemaConfig() runtime.Config {
-	cfg := runtime.Config{Resolvers: resolver.NewResolver(rout.productStr, rout.categoryStr, rout.userStr, rout.lg, rout.db, rout.trManager)}
+func (rout *Router) newSchemaConfig() genGql.Config {
+	cfg := genGql.Config{Resolvers: resolver.NewResolver(rout.productStr, rout.categoryStr, rout.userStr, rout.lg, rout.db, rout.trManager)}
 	cfg.Directives.InputUnion = directive.NewInputUnionDirective()
+	cfg.Directives.SortRankInput = directive.NewSortRankInputDirective()
+	cfg.Directives.HasRole = directive.RoleDirective()
+
 	return cfg
 }
 

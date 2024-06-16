@@ -16,11 +16,10 @@ input CreateProductInput {
     images:[String!]!
 }
 type ProductCreateOk {
-    products:Uuid!
+    id:Uuid!
 }
 union ProductCreateResult =
     | ProductNotFoundProblem
-    | InvalidSortRankProblem
     | InternalErrorProblem
     | ProductCreateOk
     | UnauthorizedProblem

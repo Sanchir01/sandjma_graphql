@@ -104,6 +104,7 @@ type CreateProductInput struct {
 	Description string    `json:"description"`
 	Price       int       `json:"price"`
 	CategoryID  uuid.UUID `json:"categoryId"`
+	Images      []string  `json:"images"`
 }
 
 type GetAllProductsOk struct {
@@ -136,8 +137,6 @@ type InvalidSortRankProblem struct {
 	Message string `json:"message"`
 }
 
-func (InvalidSortRankProblem) IsProductCreateResult() {}
-
 func (InvalidSortRankProblem) IsProblemInterface()     {}
 func (this InvalidSortRankProblem) GetMessage() string { return this.Message }
 
@@ -159,16 +158,16 @@ type Product struct {
 	ID          uuid.UUID `json:"id"`
 	Name        string    `json:"name"`
 	Price       int       `json:"price"`
-	Images      []string  `json:"images"`
 	CreatedAt   time.Time `json:"created_at"`
 	UpdatedAt   time.Time `json:"updated_at"`
+	Images      []string  `json:"images"`
 	CategoryID  uuid.UUID `json:"category_id"`
 	Description string    `json:"description"`
 	Version     uint      `json:"version"`
 }
 
 type ProductCreateOk struct {
-	Products uuid.UUID `json:"products"`
+	ID uuid.UUID `json:"id"`
 }
 
 func (ProductCreateOk) IsProductCreateResult() {}

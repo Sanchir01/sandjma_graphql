@@ -28,7 +28,6 @@ func (r *authMutationResolver) Login(ctx context.Context, obj *model.AuthMutatio
 
 	w := customMiddleware.GetResponseWriter(ctx)
 	if err = userFeature.AddCookieTokens(user.ID, user.Role, w); err != nil {
-		r.Logger.Warn("errors generating jwt", err)
 		return response.NewInternalErrorProblem("Error for generating jwt"), nil
 	}
 	return model.LoginResultOk{User: user}, nil

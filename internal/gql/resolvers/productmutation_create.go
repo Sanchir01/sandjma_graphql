@@ -6,17 +6,19 @@ package resolver
 
 import (
 	"context"
-
 	"github.com/Sanchir01/sandjma_graphql/internal/gql/model"
+	"github.com/Sanchir01/sandjma_graphql/pkg/lib/api/response"
 )
 
 // CreateProduct is the resolver for the createProduct field.
 func (r *productMutationResolver) CreateProduct(ctx context.Context, obj *model.ProductMutation, input *model.CreateProductInput) (model.ProductCreateResult, error) {
-	r.Logger.Info("CreateProduct", input)
-
 	id, err := r.ProductStr.CreateProduct(ctx, input)
+	r.Logger.Info("CreateProduct error", input)
+	//
 	if err != nil {
-		return nil, err
+		return response.NewInternalErrorProblem("Failed to create product"), nil
 	}
-	return model.ProductCreateOk{Products: id}, nil
+	r.Logger.Info("create success")
+
+	return model.ProductCreateOk{ID: id}, nil
 }
