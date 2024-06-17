@@ -1,0 +1,13 @@
+
+extend type ColorMutation {
+    createColor(input: CreateColorInput): CreateColorResult! @goField(forceResolver: true) @hasRole(role: ADMIN)
+}
+
+input CreateColorInput{
+    name:String!
+    cssVariables:String!
+}
+type CreateColorOk {
+    ok:Uuid!
+}
+union CreateColorResult = | InternalErrorProblem | CreateColorOk

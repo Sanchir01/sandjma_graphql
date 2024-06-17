@@ -53,7 +53,8 @@ func (p *ProductPostgresStorage) CreateProduct(ctx context.Context, input *model
 		return uuid.Nil, err
 	}
 	defer conn.Close()
-	myImages := []string{input.Images[0], input.Images[1]}
+	myImages := make([]string, len(input.Images))
+	copy(myImages, input.Images)
 	imagesArray := pq.Array(myImages)
 	var id uuid.UUID
 

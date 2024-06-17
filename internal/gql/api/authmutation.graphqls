@@ -1,5 +1,0 @@
-type AuthMutation
-
-extend type Mutation {
-    auth:AuthMutation
-}

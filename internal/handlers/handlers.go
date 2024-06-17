@@ -9,8 +9,10 @@ import (
 	"github.com/99designs/gqlgen/graphql/playground"
 	"github.com/Sanchir01/sandjma_graphql/internal/config"
 	categoryStore "github.com/Sanchir01/sandjma_graphql/internal/database/store/category"
+	"github.com/Sanchir01/sandjma_graphql/internal/database/store/color"
 	productStore "github.com/Sanchir01/sandjma_graphql/internal/database/store/product"
 	storage "github.com/Sanchir01/sandjma_graphql/internal/database/store/product"
+	sizeStorage "github.com/Sanchir01/sandjma_graphql/internal/database/store/size"
 	userStorage "github.com/Sanchir01/sandjma_graphql/internal/database/store/user"
 	"github.com/Sanchir01/sandjma_graphql/internal/gql/directive"
 	genGql "github.com/Sanchir01/sandjma_graphql/internal/gql/generated"
@@ -20,7 +22,6 @@ import (
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/go-chi/cors"
-	"github.com/jmoiron/sqlx"
 	"github.com/vektah/gqlparser/v2/gqlerror"
 	"log"
 	"log/slog"
@@ -35,7 +36,8 @@ type Router struct {
 	productStr  *productStore.ProductPostgresStorage
 	categoryStr *categoryStore.CategoryPostgresStore
 	userStr     *userStorage.UserPostgresStorage
-	db          *sqlx.DB
+	sizeStr     *sizeStorage.SizePostgresStorage
+	colorStr    *colorStorage.ColorPostgresStorage
 	trManager   *manager.Manager
 }
 
@@ -48,8 +50,10 @@ const (
 
 func NewChiRouter(
 	lg *slog.Logger, config *config.Config, chi *chi.Mux, productStr *storage.ProductPostgresStorage,
-	categoryStr *categoryStore.CategoryPostgresStore, userStr *userStorage.UserPostgresStorage, db *sqlx.DB,
-	trManager *manager.Manager) *Router {
+	categoryStr *categoryStore.CategoryPostgresStore, userStr *userStorage.UserPostgresStorage, sizeStr *sizeStorage.SizePostgresStorage,
+	colorStr *colorStorage.ColorPostgresStorage,
+	trManager *manager.Manager,
+) *Router {
 	return &Router{
 		chiRouter:   chi,
 		lg:          lg,
@@ -57,7 +61,8 @@ func NewChiRouter(
 		productStr:  productStr,
 		categoryStr: categoryStr,
 		userStr:     userStr,
-		db:          db,
+		sizeStr:     sizeStr,
+		colorStr:    colorStr,
 		trManager:   trManager,
 	}
 }
@@ -102,7 +107,11 @@ func (rout *Router) NewGraphQLHandler() *gqlhandler.Server {
 }
 
 func (rout *Router) newSchemaConfig() genGql.Config {
-	cfg := genGql.Config{Resolvers: resolver.NewResolver(rout.productStr, rout.categoryStr, rout.userStr, rout.lg, rout.db, rout.trManager)}
+	cfg := genGql.Config{Resolvers: resolver.NewResolver(
+		rout.productStr, rout.categoryStr, rout.userStr,
+		rout.lg, rout.sizeStr, rout.colorStr,
+		rout.trManager,
+	)}
 	cfg.Directives.InputUnion = directive.NewInputUnionDirective()
 	cfg.Directives.SortRankInput = directive.NewSortRankInputDirective()
 	cfg.Directives.HasRole = directive.RoleDirective()

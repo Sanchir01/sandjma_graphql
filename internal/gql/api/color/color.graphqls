@@ -1,0 +1,8 @@
+type Color {
+    id:Uuid!
+    name:String!
+    slug:String!
+    css_variables:String!
+    created_at:DateTime!
+    updated_at:DateTime!
+}

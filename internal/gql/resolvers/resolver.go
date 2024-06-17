@@ -2,10 +2,11 @@ package resolver
 
 import (
 	categoryStorage "github.com/Sanchir01/sandjma_graphql/internal/database/store/category"
+	colorStorage "github.com/Sanchir01/sandjma_graphql/internal/database/store/color"
 	productStorage "github.com/Sanchir01/sandjma_graphql/internal/database/store/product"
+	sizeStorage "github.com/Sanchir01/sandjma_graphql/internal/database/store/size"
 	userStorage "github.com/Sanchir01/sandjma_graphql/internal/database/store/user"
 	"github.com/avito-tech/go-transaction-manager/trm/v2/manager"
-	"github.com/jmoiron/sqlx"
 	"log/slog"
 )
 
@@ -18,7 +19,8 @@ type Resolver struct {
 	CategoryStr *categoryStorage.CategoryPostgresStore
 	UserStr     *userStorage.UserPostgresStorage
 	Logger      *slog.Logger
-	DB          *sqlx.DB
+	SizeStr     *sizeStorage.SizePostgresStorage
+	ColorStr    *colorStorage.ColorPostgresStorage
 	TrManager   *manager.Manager
 }
 
@@ -27,7 +29,8 @@ func NewResolver(
 	CategoryStr *categoryStorage.CategoryPostgresStore,
 	UserStr *userStorage.UserPostgresStorage,
 	Logger *slog.Logger,
-	DB *sqlx.DB,
+	SizeStr *sizeStorage.SizePostgresStorage,
+	ColorStr *colorStorage.ColorPostgresStorage,
 	TrManager *manager.Manager,
 ) *Resolver {
 	return &Resolver{
@@ -35,7 +38,8 @@ func NewResolver(
 		CategoryStr: CategoryStr,
 		UserStr:     UserStr,
 		Logger:      Logger,
-		DB:          DB,
+		SizeStr:     SizeStr,
+		ColorStr:    ColorStr,
 		TrManager:   TrManager,
 	}
 }

@@ -1,0 +1,15 @@
+extend type AuthMutation {
+    registration(input:RegistrationsInput): RegistrationsResult! @goField(forceResolver: true)
+}
+
+type RegistrationsResultOk {
+    user:User!
+}
+input  RegistrationsInput {
+    phone: String!
+    password:String!
+    email:String!
+    role:Role!
+    name:String!
+}
+union RegistrationsResult = | InternalErrorProblem | RegistrationsResultOk

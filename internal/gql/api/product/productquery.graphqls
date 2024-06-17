@@ -1,0 +1,5 @@
+type ProductQuery
+
+extend type Query {
+    products:ProductQuery!
+}

@@ -19,8 +19,20 @@ type CategoryGetAllResult interface {
 	IsCategoryGetAllResult()
 }
 
+type CreateColorResult interface {
+	IsCreateColorResult()
+}
+
+type GetAllColorResult interface {
+	IsGetAllColorResult()
+}
+
 type GetAllProductResult interface {
 	IsGetAllProductResult()
+}
+
+type GetAllSizeResult interface {
+	IsGetAllSizeResult()
 }
 
 type LoginResult interface {
@@ -38,6 +50,10 @@ type ProductCreateResult interface {
 
 type RegistrationsResult interface {
 	IsRegistrationsResult()
+}
+
+type SizeCreateResult interface {
+	IsSizeCreateResult()
 }
 
 type VersionInterface interface {
@@ -64,7 +80,7 @@ func (Category) IsVersionInterface()   {}
 func (this Category) GetVersion() uint { return this.Version }
 
 type CategoryCreateOk struct {
-	ID uuid.UUID `json:"Id"`
+	ID uuid.UUID `json:"id"`
 }
 
 func (CategoryCreateOk) IsCategoryCreateResult() {}
@@ -94,10 +110,38 @@ type CategoryQuery struct {
 	GetAllCategory CategoryGetAllResult `json:"getAllCategory"`
 }
 
+type Color struct {
+	ID           uuid.UUID `json:"id"`
+	Name         string    `json:"name"`
+	Slug         string    `json:"slug"`
+	CSSVariables string    `json:"css_variables"`
+	CreatedAt    time.Time `json:"created_at"`
+	UpdatedAt    time.Time `json:"updated_at"`
+}
+
+type ColorMutation struct {
+	CreateColor CreateColorResult `json:"createColor"`
+}
+
+type ColorQuery struct {
+	GetAllColors GetAllColorResult `json:"getAllColors"`
+}
+
 type CreateCategoryInput struct {
 	Name        string `json:"name"`
 	Description string `json:"description"`
 }
+
+type CreateColorInput struct {
+	Name         string `json:"name"`
+	CSSVariables string `json:"cssVariables"`
+}
+
+type CreateColorOk struct {
+	Ok uuid.UUID `json:"ok"`
+}
+
+func (CreateColorOk) IsCreateColorResult() {}
 
 type CreateProductInput struct {
 	Name        string    `json:"name"`
@@ -107,12 +151,24 @@ type CreateProductInput struct {
 	Images      []string  `json:"images"`
 }
 
+type GetAllColorOk struct {
+	Colors []*Color `json:"colors"`
+}
+
+func (GetAllColorOk) IsGetAllColorResult() {}
+
 type GetAllProductsOk struct {
 	Products   []*Product `json:"products"`
 	TotalCount uint       `json:"totalCount"`
 }
 
 func (GetAllProductsOk) IsGetAllProductResult() {}
+
+type GetAllSizeOk struct {
+	Sizes []*Size `json:"sizes"`
+}
+
+func (GetAllSizeOk) IsGetAllSizeResult() {}
 
 type InternalErrorProblem struct {
 	Message string `json:"message"`
@@ -126,12 +182,20 @@ func (InternalErrorProblem) IsCategoryCreateResult() {}
 
 func (InternalErrorProblem) IsCategoryGetAllResult() {}
 
+func (InternalErrorProblem) IsCreateColorResult() {}
+
+func (InternalErrorProblem) IsGetAllColorResult() {}
+
 func (InternalErrorProblem) IsProblemInterface()     {}
 func (this InternalErrorProblem) GetMessage() string { return this.Message }
 
 func (InternalErrorProblem) IsProductCreateResult() {}
 
 func (InternalErrorProblem) IsGetAllProductResult() {}
+
+func (InternalErrorProblem) IsSizeCreateResult() {}
+
+func (InternalErrorProblem) IsGetAllSizeResult() {}
 
 type InvalidSortRankProblem struct {
 	Message string `json:"message"`
@@ -205,6 +269,32 @@ type RegistrationsResultOk struct {
 }
 
 func (RegistrationsResultOk) IsRegistrationsResult() {}
+
+type Size struct {
+	ID        uuid.UUID `json:"id"`
+	Name      string    `json:"name"`
+	Slug      string    `json:"slug"`
+	CreatedAt time.Time `json:"created_at"`
+	UpdatedAt time.Time `json:"updated_at"`
+}
+
+type SizeCreateInput struct {
+	Name string `json:"name"`
+}
+
+type SizeCreateOk struct {
+	Ok uuid.UUID `json:"ok"`
+}
+
+func (SizeCreateOk) IsSizeCreateResult() {}
+
+type SizeMutation struct {
+	CreateSize SizeCreateResult `json:"createSize"`
+}
+
+type SizeQuery struct {
+	GetAllSizes GetAllSizeResult `json:"getAllSizes"`
+}
 
 type SortRankInput struct {
 	Prev string `json:"prev"`

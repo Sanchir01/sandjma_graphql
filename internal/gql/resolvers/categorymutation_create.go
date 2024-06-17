@@ -16,11 +16,11 @@ import (
 func (r *categoryMutationResolver) CreateCategory(ctx context.Context, obj *model.CategoryMutation, input *model.CreateCategoryInput) (model.CategoryCreateResult, error) {
 	newSlug, err := utils.Slugify(input.Name)
 	if err != nil {
-		return response.NewInternalErrorProblem("sads"), err
+		return response.NewInternalErrorProblem("error generating slug category"), err
 	}
 	id, err := r.CategoryStr.CreateCategory(ctx, input, newSlug)
 	if err != nil {
-		return response.NewInternalErrorProblem("sads"), err
+		return response.NewInternalErrorProblem("error creating category"), err
 	}
 	return model.CategoryCreateOk{ID: id}, nil
 }

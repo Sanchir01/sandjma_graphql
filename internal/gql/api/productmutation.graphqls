@@ -1,5 +1,0 @@
-type ProductMutation
-
-extend type Mutation {
-    products:ProductMutation!
-}
