@@ -1,5 +1,7 @@
 PHONY:
+
 SILENT:
+
 MIGRATION_NAME ?= new_migration
 
 build:
