@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"errors"
+	"fmt"
 	telegram "github.com/Sanchir01/sandjma_graphql/internal/bot"
 	"github.com/Sanchir01/sandjma_graphql/internal/config"
 	categoryStore "github.com/Sanchir01/sandjma_graphql/internal/database/store/category"
@@ -39,7 +40,7 @@ func main() {
 	cfg := config.InitConfig()
 	lg := setupLogger(cfg.Env)
 	lg.Info("Graphql server starting up...", slog.String("port", cfg.HttpServer.Port))
-	db, err := sqlx.Open("postgres", "user=postgres dbname=golangS sslmode=disable password=sanchirgarik01")
+	db, err := sqlx.Open("postgres", fmt.Sprintf("user=%s dbname=%s sslmode=%s password=%s", cfg.DB.User, cfg.DB.Database, cfg.DB.SSL, os.Getenv("PASSWORD_POSTGRES")))
 	if err != nil {
 		lg.Error("sqlx.Connect error", slog.String("error", err.Error()))
 	}

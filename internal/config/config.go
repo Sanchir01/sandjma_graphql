@@ -23,6 +23,7 @@ type DataBase struct {
 	Port     string `yaml:"port"`
 	User     string `yaml:"user"`
 	Database string `yaml:"database"`
+	SSL      string `yaml:"ssl"`
 }
 type HttpServer struct {
 	Timeout     time.Duration `yaml:"timeout"  env-default:"4s"`
