@@ -3,6 +3,7 @@ type Color {
     name:String!
     slug:String!
     css_variables:String!
+    version:UInt!
     created_at:DateTime!
     updated_at:DateTime!
 }

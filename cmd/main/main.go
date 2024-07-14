@@ -40,7 +40,8 @@ func main() {
 	cfg := config.InitConfig()
 	lg := setupLogger(cfg.Env)
 	lg.Info("Graphql server starting up...", slog.String("port", cfg.HttpServer.Port))
-	db, err := sqlx.Open("postgres", fmt.Sprintf("user=%s dbname=%s sslmode=%s password=%s", cfg.DB.User, cfg.DB.Database, cfg.DB.SSL, os.Getenv("PASSWORD_POSTGRES")))
+	postgresString := fmt.Sprintf("user=%s dbname=%s sslmode=%s password=%s", cfg.DB.User, cfg.DB.Database, cfg.DB.SSL, os.Getenv("PASSWORD_POSTGRES"))
+	db, err := sqlx.Open("postgres", postgresString)
 	if err != nil {
 		lg.Error("sqlx.Connect error", slog.String("error", err.Error()))
 	}

@@ -102,6 +102,7 @@ type ComplexityRoot struct {
 		Name         func(childComplexity int) int
 		Slug         func(childComplexity int) int
 		UpdatedAt    func(childComplexity int) int
+		Version      func(childComplexity int) int
 	}
 
 	ColorMutation struct {
@@ -194,6 +195,7 @@ type ComplexityRoot struct {
 		Name      func(childComplexity int) int
 		Slug      func(childComplexity int) int
 		UpdatedAt func(childComplexity int) int
+		Version   func(childComplexity int) int
 	}
 
 	SizeCreateOk struct {
@@ -444,6 +446,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Color.UpdatedAt(childComplexity), true
+
+	case "Color.version":
+		if e.complexity.Color.Version == nil {
+			break
+		}
+
+		return e.complexity.Color.Version(childComplexity), true
 
 	case "ColorMutation.createColor":
 		if e.complexity.ColorMutation.CreateColor == nil {
@@ -725,6 +734,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Size.UpdatedAt(childComplexity), true
+
+	case "Size.version":
+		if e.complexity.Size.Version == nil {
+			break
+		}
+
+		return e.complexity.Size.Version(childComplexity), true
 
 	case "SizeCreateOk.ok":
 		if e.complexity.SizeCreateOk.Ok == nil {
@@ -1075,6 +1091,7 @@ union CategoryGetAllResult = | CategoryGetAllOk |InternalErrorProblem |CategoryN
     name:String!
     slug:String!
     css_variables:String!
+    version:UInt!
     created_at:DateTime!
     updated_at:DateTime!
 }`, BuiltIn: false},
@@ -1200,6 +1217,7 @@ union GetAllProductResult = | GetAllProductsOk | InternalErrorProblem`, BuiltIn:
     slug:String!
     created_at:DateTime!
     updated_at:DateTime!
+    version:UInt!
 }`, BuiltIn: false},
 	{Name: "../api/size/sizemutation.graphqls", Input: `type SizeMutation
 
@@ -2297,6 +2315,50 @@ func (ec *executionContext) fieldContext_Color_css_variables(_ context.Context, 
 	return fc, nil
 }
 
+func (ec *executionContext) _Color_version(ctx context.Context, field graphql.CollectedField, obj *model.Color) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Color_version(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Version, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(uint)
+	fc.Result = res
+	return ec.marshalNUInt2uint(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Color_version(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Color",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type UInt does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
 func (ec *executionContext) _Color_created_at(ctx context.Context, field graphql.CollectedField, obj *model.Color) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_Color_created_at(ctx, field)
 	if err != nil {
@@ -2599,6 +2661,8 @@ func (ec *executionContext) fieldContext_GetAllColorOk_colors(_ context.Context,
 				return ec.fieldContext_Color_slug(ctx, field)
 			case "css_variables":
 				return ec.fieldContext_Color_css_variables(ctx, field)
+			case "version":
+				return ec.fieldContext_Color_version(ctx, field)
 			case "created_at":
 				return ec.fieldContext_Color_created_at(ctx, field)
 			case "updated_at":
@@ -2767,6 +2831,8 @@ func (ec *executionContext) fieldContext_GetAllSizeOk_sizes(_ context.Context, f
 				return ec.fieldContext_Size_created_at(ctx, field)
 			case "updated_at":
 				return ec.fieldContext_Size_updated_at(ctx, field)
+			case "version":
+				return ec.fieldContext_Size_version(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Size", field.Name)
 		},
@@ -4368,6 +4434,50 @@ func (ec *executionContext) fieldContext_Size_updated_at(_ context.Context, fiel
 		IsResolver: false,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			return nil, errors.New("field of type DateTime does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Size_version(ctx context.Context, field graphql.CollectedField, obj *model.Size) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Size_version(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Version, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(uint)
+	fc.Result = res
+	return ec.marshalNUInt2uint(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Size_version(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Size",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type UInt does not have child fields")
 		},
 	}
 	return fc, nil
@@ -7880,6 +7990,11 @@ func (ec *executionContext) _Color(ctx context.Context, sel ast.SelectionSet, ob
 			if out.Values[i] == graphql.Null {
 				out.Invalids++
 			}
+		case "version":
+			out.Values[i] = ec._Color_version(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
 		case "created_at":
 			out.Values[i] = ec._Color_created_at(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
@@ -8897,6 +9012,11 @@ func (ec *executionContext) _Size(ctx context.Context, sel ast.SelectionSet, obj
 			}
 		case "updated_at":
 			out.Values[i] = ec._Size_updated_at(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "version":
+			out.Values[i] = ec._Size_version(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				out.Invalids++
 			}

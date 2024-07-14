@@ -115,6 +115,7 @@ type Color struct {
 	Name         string    `json:"name"`
 	Slug         string    `json:"slug"`
 	CSSVariables string    `json:"css_variables"`
+	Version      uint      `json:"version"`
 	CreatedAt    time.Time `json:"created_at"`
 	UpdatedAt    time.Time `json:"updated_at"`
 }
@@ -276,6 +277,7 @@ type Size struct {
 	Slug      string    `json:"slug"`
 	CreatedAt time.Time `json:"created_at"`
 	UpdatedAt time.Time `json:"updated_at"`
+	Version   uint      `json:"version"`
 }
 
 type SizeCreateInput struct {

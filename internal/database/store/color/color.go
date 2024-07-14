@@ -51,10 +51,11 @@ func (db *ColorPostgresStorage) GetAllColor(ctx context.Context) ([]model.Color,
 }
 
 type dbColor struct {
-	ID           uuid.UUID `json:"id"`
-	Name         string    `json:"name"`
-	Slug         string    `json:"slug"`
-	CSSVariables string    `json:"css_variables"`
-	CreatedAt    time.Time `json:"created_at"`
-	UpdatedAt    time.Time `json:"updated_at"`
+	ID           uuid.UUID `db:"id"`
+	Name         string    `db:"name"`
+	Slug         string    `db:"slug"`
+	CSSVariables string    `db:"css_variables"`
+	Version      uint      `db:"version"`
+	CreatedAt    time.Time `db:"created_at"`
+	UpdatedAt    time.Time `db:"updated_at"`
 }

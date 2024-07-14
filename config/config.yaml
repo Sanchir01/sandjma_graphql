@@ -26,8 +26,8 @@ database:
   host: "localhost"
   port: "5432"
   user: "postgres"
-  ssl: "required"
+  ssl: "disabled"
   password: "postrgres"
-  dbname: "postgres"
+  dbname: "golangS"
 
 

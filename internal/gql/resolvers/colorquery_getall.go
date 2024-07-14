@@ -6,6 +6,8 @@ package resolver
 
 import (
 	"context"
+
+	featureColor "github.com/Sanchir01/sandjma_graphql/internal/feature/color"
 	"github.com/Sanchir01/sandjma_graphql/internal/gql/model"
 	"github.com/Sanchir01/sandjma_graphql/pkg/lib/api/response"
 )
@@ -17,6 +19,7 @@ func (r *colorQueryResolver) GetAllColors(ctx context.Context, obj *model.ColorQ
 		r.Logger.Error("error getAll color", err.Error())
 		return response.NewInternalErrorProblem("error getAll colors"), nil
 	}
-	r.Logger.Warn("colors", colors)
-	return nil, nil
+
+	colorsMapping, err := featureColor.MapManyColorsToGqlModels(colors)
+	return model.GetAllColorOk{Colors: colorsMapping}, nil
 }

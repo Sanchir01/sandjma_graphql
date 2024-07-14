@@ -13,6 +13,9 @@ gql:
 run: build
 	./.bin/main
 
+air:
+	air
+
 build-image:
 	docker build -t cryptobot-dockerfile .
 start-container:
