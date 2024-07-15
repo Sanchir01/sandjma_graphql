@@ -24,10 +24,10 @@ errors:
 
 database:
   host: "localhost"
-  port: "5432"
+  port: "5436"
   user: "postgres"
-  ssl: "disabled"
-  password: "postrgres"
-  dbname: "golangS"
+  ssl: "disable"
+  password: "sanchirgarik01"
+  dbname: "test"
 
 

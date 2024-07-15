@@ -15,7 +15,7 @@ import (
 // GetAllProduct is the resolver for the getAllProduct field.
 func (r *productQueryResolver) GetAllProduct(ctx context.Context, obj *model.ProductQuery, sort model.ArticleBlockFindSortEnum) (model.GetAllProductResult, error) {
 	products, err := r.ProductStr.GetAllProducts(ctx)
-	r.Logger.Info("All products", products)
+	//r.Logger.Info("All products", products)
 	if err != nil {
 		return response.NewInternalErrorProblem("error for get all products db"), nil
 	}

@@ -3,11 +3,11 @@ package main
 import (
 	"context"
 	"errors"
-	"fmt"
 	telegram "github.com/Sanchir01/sandjma_graphql/internal/bot"
 	"github.com/Sanchir01/sandjma_graphql/internal/config"
 	categoryStore "github.com/Sanchir01/sandjma_graphql/internal/database/store/category"
 	colorStorage "github.com/Sanchir01/sandjma_graphql/internal/database/store/color"
+	"github.com/Sanchir01/sandjma_graphql/pkg/lib/db/connect"
 
 	"github.com/Sanchir01/sandjma_graphql/internal/database/store/product"
 	sizeStorage "github.com/Sanchir01/sandjma_graphql/internal/database/store/size"
@@ -19,7 +19,6 @@ import (
 	"github.com/avito-tech/go-transaction-manager/trm/v2/manager"
 	"github.com/go-chi/chi/v5"
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api"
-	"github.com/jmoiron/sqlx"
 	_ "github.com/lib/pq"
 	"log"
 	"log/slog"
@@ -36,17 +35,13 @@ var (
 )
 
 func main() {
-
 	cfg := config.InitConfig()
 	lg := setupLogger(cfg.Env)
 	lg.Info("Graphql server starting up...", slog.String("port", cfg.HttpServer.Port))
-	postgresString := fmt.Sprintf("user=%s dbname=%s sslmode=%s password=%s", cfg.DB.User, cfg.DB.Database, cfg.DB.SSL, os.Getenv("PASSWORD_POSTGRES"))
-	db, err := sqlx.Open("postgres", postgresString)
-	if err != nil {
-		lg.Error("sqlx.Connect error", slog.String("error", err.Error()))
-	}
-	lg.Info("DATABASE CONNECTED", db)
 
+	db := connect.PostgresCon(cfg, lg)
+
+	lg.Info("DATABASE CONNECTED", db)
 	defer db.Close()
 	trManager := manager.Must(trmsqlx.NewDefaultFactory(db))
 	r := chi.NewRouter()

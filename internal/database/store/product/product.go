@@ -30,6 +30,7 @@ func (p *ProductPostgresStorage) GetAllProducts(ctx context.Context) ([]model.Pr
 	}
 
 	newProducts := make([]model.Product, len(products))
+
 	for i, dbProd := range products {
 		newProducts[i] = model.Product{
 			ID:          dbProd.ID,
