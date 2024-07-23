@@ -27,7 +27,7 @@ database:
   port: "5436"
   user: "postgres"
   ssl: "disable"
-  password: "sanchirgarik01"
+  password: "postgres"
   dbname: "test"
 
 
