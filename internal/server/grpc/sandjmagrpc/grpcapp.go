@@ -41,11 +41,16 @@ func NewGrpcAuth(ctx context.Context, api sandjmav1.AuthClient, addr string, ret
 	}, nil
 }
 
-func (g *Client) IsUserPhone(ctx context.Context, userId string) (bool, error) {
+func (g *Client) IsUserPhone(ctx context.Context, userId string) (*sandjmav1.LoginResponse, error) {
 	const op = "grpc.IsUserPhone"
 	resp, err := g.api.Login(ctx, &sandjmav1.LoginRequest{
-		userId: userId,
+		Phone:    "1234",
+		Password: "test",
 	})
+	if err != nil {
+		return nil, fmt.Errorf("%s: %w", op, err)
+	}
+	return resp, nil
 }
 
 func InterceptorLogger(l *slog.Logger) grpclog.Logger {
