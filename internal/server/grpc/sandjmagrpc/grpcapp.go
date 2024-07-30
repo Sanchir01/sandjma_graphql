@@ -18,7 +18,7 @@ type Client struct {
 	log *slog.Logger
 }
 
-func NewGrpcAuth(ctx context.Context, api sandjmav1.AuthClient, addr string, retries int, log *slog.Logger) (*Client, error) {
+func NewGrpcAuth(ctx context.Context, addr string, retries int, log *slog.Logger) (*Client, error) {
 	const op = "grpc.NewSandjma"
 	retryOpts := []grpcretry.CallOption{
 		grpcretry.WithCodes(codes.NotFound, codes.Aborted, codes.DeadlineExceeded),
@@ -28,14 +28,17 @@ func NewGrpcAuth(ctx context.Context, api sandjmav1.AuthClient, addr string, ret
 	logOpts := []grpclog.Option{
 		grpclog.WithLogOnEvents(grpclog.PayloadReceived, grpclog.PayloadSent),
 	}
-	cc, err := grpc.NewClient(addr, grpc.WithTransportCredentials(insecure.NewCredentials()),
+	cc, err := grpc.NewClient(addr,
+		grpc.WithTransportCredentials(insecure.NewCredentials()),
 		grpc.WithChainUnaryInterceptor(
 			grpclog.UnaryClientInterceptor(InterceptorLogger(log), logOpts...),
 			grpcretry.UnaryClientInterceptor(retryOpts...)),
 	)
+
 	if err != nil {
 		return nil, fmt.Errorf("%s: %w", op, err)
 	}
+
 	return &Client{
 		api: sandjmav1.NewAuthClient(cc),
 	}, nil
@@ -44,7 +47,7 @@ func NewGrpcAuth(ctx context.Context, api sandjmav1.AuthClient, addr string, ret
 func (g *Client) IsUserPhone(ctx context.Context, userId string) (*sandjmav1.LoginResponse, error) {
 	const op = "grpc.IsUserPhone"
 	resp, err := g.api.Login(ctx, &sandjmav1.LoginRequest{
-		Phone:    "1234",
+		Phone:    userId,
 		Password: "test",
 	})
 	if err != nil {

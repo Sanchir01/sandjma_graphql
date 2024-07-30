@@ -15,7 +15,8 @@ type Config struct {
 	StoragePath string `yaml:"storage_path" env:"STORAGE_PATH" env-required:"internal/db"`
 	HttpServer  `yaml:"http_server"`
 	Errors      `yaml:"errors"`
-	DB          DataBase `yaml:"database"`
+	DB          DataBase          `yaml:"database"`
+	GrpcClients GrpcClientsConfig `yaml:"grpc"`
 }
 
 type DataBase struct {
@@ -38,10 +39,18 @@ type Errors struct {
 	Unauthorized ErrorsBody `yaml:"unauthorized"  env-default:"Unauthorized"`
 	NotFound     ErrorsBody `yaml:"not_found"  env-default:"Not found"`
 }
-
+type GrpcClient struct {
+	Address  string        `yaml:"address"`
+	Timeout  time.Duration `yaml:"timeout"`
+	Retries  int           `yaml:"retries"`
+	Insecure bool          `yaml:"insecure"`
+}
 type ErrorsBody struct {
 	message string `yaml:"message"`
 	code    int    `yaml:"code"`
+}
+type GrpcClientsConfig struct {
+	Auth GrpcClient `yaml:"auth"`
 }
 
 func InitConfig() *Config {

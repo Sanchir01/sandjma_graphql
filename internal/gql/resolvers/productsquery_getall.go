@@ -19,7 +19,8 @@ func (r *productQueryResolver) GetAllProduct(ctx context.Context, obj *model.Pro
 	if err != nil {
 		return response.NewInternalErrorProblem("error for get all products db"), nil
 	}
-
+	req, err := r.Authgrpclient.IsUserPhone(ctx, "1234")
+	r.Logger.Warn("req auth grpc client request", req)
 	productsFetch, err := featureProduct.MapManyProductsToGqlModels(products)
 	if err != nil {
 		return response.NewInternalErrorProblem("error for mapping products gql"), nil

@@ -7,6 +7,7 @@ import (
 	"github.com/Sanchir01/sandjma_graphql/internal/config"
 	categoryStore "github.com/Sanchir01/sandjma_graphql/internal/database/store/category"
 	colorStorage "github.com/Sanchir01/sandjma_graphql/internal/database/store/color"
+	"github.com/Sanchir01/sandjma_graphql/internal/server/grpc/sandjmagrpc"
 	"github.com/Sanchir01/sandjma_graphql/pkg/lib/db/connect"
 
 	"github.com/Sanchir01/sandjma_graphql/internal/database/store/product"
@@ -45,6 +46,11 @@ func main() {
 	defer db.Close()
 	trManager := manager.Must(trmsqlx.NewDefaultFactory(db))
 	r := chi.NewRouter()
+	authgrpclient, err := sandjmagrpc.NewGrpcAuth(context.Background(), cfg.GrpcClients.Auth.Address, cfg.GrpcClients.Auth.Retries, lg)
+	if err != nil {
+		lg.Error("failed init auth grpc client", err)
+		os.Exit(1)
+	}
 
 	var (
 		productStorage  = productStore.NewProductPostgresStorage(db)
@@ -52,8 +58,11 @@ func main() {
 		userStorages    = userStorage.NewUserPostgresStorage(db)
 		colorStorages   = colorStorage.NewColorPostgresStorage(db)
 		sizeStorages    = sizeStorage.NewProductPostgresStorage(db)
-
-		handlers = httpHandlers.NewChiRouter(lg, cfg, r, productStorage, categoryStorage, userStorages, sizeStorages, colorStorages, trManager)
+		handlers        = httpHandlers.NewChiRouter(
+			lg, cfg, r,
+			productStorage, categoryStorage, userStorages, sizeStorages, colorStorages,
+			trManager, authgrpclient,
+		)
 	)
 	serve := httpServer.NewHttpServer(cfg)
 	ctx, cancel := signal.NotifyContext(context.Background(), syscall.SIGTERM, syscall.SIGINT, os.Interrupt)

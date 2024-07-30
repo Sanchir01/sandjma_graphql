@@ -30,4 +30,7 @@ database:
   password: "postgres"
   dbname: "test"
 
+grpc:
+  auth:
+    address: "localhost:44044"
 

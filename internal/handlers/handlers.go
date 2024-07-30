@@ -18,6 +18,7 @@ import (
 	genGql "github.com/Sanchir01/sandjma_graphql/internal/gql/generated"
 	resolver "github.com/Sanchir01/sandjma_graphql/internal/gql/resolvers"
 	customMiddleware "github.com/Sanchir01/sandjma_graphql/internal/handlers/middleware"
+	"github.com/Sanchir01/sandjma_graphql/internal/server/grpc/sandjmagrpc"
 	"github.com/avito-tech/go-transaction-manager/trm/v2/manager"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
@@ -30,15 +31,16 @@ import (
 )
 
 type Router struct {
-	chiRouter   *chi.Mux
-	lg          *slog.Logger
-	config      *config.Config
-	productStr  *productStore.ProductPostgresStorage
-	categoryStr *categoryStore.CategoryPostgresStore
-	userStr     *userStorage.UserPostgresStorage
-	sizeStr     *sizeStorage.SizePostgresStorage
-	colorStr    *colorStorage.ColorPostgresStorage
-	trManager   *manager.Manager
+	chiRouter     *chi.Mux
+	lg            *slog.Logger
+	config        *config.Config
+	productStr    *productStore.ProductPostgresStorage
+	categoryStr   *categoryStore.CategoryPostgresStore
+	userStr       *userStorage.UserPostgresStorage
+	sizeStr       *sizeStorage.SizePostgresStorage
+	colorStr      *colorStorage.ColorPostgresStorage
+	trManager     *manager.Manager
+	authgrpclient *sandjmagrpc.Client
 }
 
 const (
@@ -52,18 +54,19 @@ func NewChiRouter(
 	lg *slog.Logger, config *config.Config, chi *chi.Mux, productStr *storage.ProductPostgresStorage,
 	categoryStr *categoryStore.CategoryPostgresStore, userStr *userStorage.UserPostgresStorage, sizeStr *sizeStorage.SizePostgresStorage,
 	colorStr *colorStorage.ColorPostgresStorage,
-	trManager *manager.Manager,
+	trManager *manager.Manager, authgrpclient *sandjmagrpc.Client,
 ) *Router {
 	return &Router{
-		chiRouter:   chi,
-		lg:          lg,
-		config:      config,
-		productStr:  productStr,
-		categoryStr: categoryStr,
-		userStr:     userStr,
-		sizeStr:     sizeStr,
-		colorStr:    colorStr,
-		trManager:   trManager,
+		chiRouter:     chi,
+		lg:            lg,
+		config:        config,
+		productStr:    productStr,
+		categoryStr:   categoryStr,
+		userStr:       userStr,
+		sizeStr:       sizeStr,
+		colorStr:      colorStr,
+		trManager:     trManager,
+		authgrpclient: authgrpclient,
 	}
 }
 
@@ -94,13 +97,14 @@ func (rout *Router) NewGraphQLHandler() *gqlhandler.Server {
 	srv.Use(extension.Introspection{})
 	srv.Use(extension.AutomaticPersistedQuery{Cache: lru.New(automaticPersistedQueryCacheLRUSize)})
 
-	srv.SetRecoverFunc(func(ctx context.Context, err interface{}) (userMessage error) {
-		buf := make([]byte, 1024)
-		n := runtime.Stack(buf, false)
-		log.Printf("Panic: %v\nStack: %s\n", err, buf[:n])
+	srv.SetRecoverFunc(
+		func(ctx context.Context, err interface{}) (userMessage error) {
+			buf := make([]byte, 1024)
+			n := runtime.Stack(buf, false)
+			log.Printf("Panic: %v\nStack: %s\n", err, buf[:n])
 
-		return gqlerror.Errorf("internal server error graphql обработка паники")
-	})
+			return gqlerror.Errorf("internal server error graphql обработка паники")
+		})
 	srv.Use(extension.FixedComplexityLimit(complexityLimit))
 
 	return srv
@@ -111,6 +115,7 @@ func (rout *Router) newSchemaConfig() genGql.Config {
 		rout.productStr, rout.categoryStr, rout.userStr,
 		rout.lg, rout.sizeStr, rout.colorStr,
 		rout.trManager,
+		rout.authgrpclient,
 	)}
 	cfg.Directives.InputUnion = directive.NewInputUnionDirective()
 	cfg.Directives.SortRankInput = directive.NewSortRankInputDirective()
