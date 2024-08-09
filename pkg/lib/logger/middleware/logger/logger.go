@@ -1,6 +1,7 @@
 package mwlogger
 
 import (
+	grpclog "github.com/grpc-ecosystem/go-grpc-middleware/v2/interceptors/logging"
 	"net/http"
 	"time"
 
@@ -40,4 +41,9 @@ func New(log *slog.Logger) func(next http.Handler) http.Handler {
 
 		return http.HandlerFunc(fn)
 	}
+}
+func InterceptorLogger(l *slog.Logger) grpclog.Logger {
+	return grpclog.LoggerFunc(func(ctx context.Context, lvl grpclog.Level, msg string, fields ...any) {
+		l.Log(ctx, slog.Level(lvl), msg, fields...)
+	})
 }

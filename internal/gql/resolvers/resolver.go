@@ -6,7 +6,7 @@ import (
 	productStorage "github.com/Sanchir01/sandjma_graphql/internal/database/store/product"
 	sizeStorage "github.com/Sanchir01/sandjma_graphql/internal/database/store/size"
 	userStorage "github.com/Sanchir01/sandjma_graphql/internal/database/store/user"
-	"github.com/Sanchir01/sandjma_graphql/internal/server/grpc/sandjmagrpc"
+	"github.com/Sanchir01/sandjma_graphql/internal/server/grpc/authgrpc"
 	"github.com/avito-tech/go-transaction-manager/trm/v2/manager"
 	"log/slog"
 )
@@ -23,7 +23,7 @@ type Resolver struct {
 	SizeStr       *sizeStorage.SizePostgresStorage
 	ColorStr      *colorStorage.ColorPostgresStorage
 	TrManager     *manager.Manager
-	Authgrpclient *sandjmagrpc.Client
+	Authgrpclient *authgrpc.Client
 }
 
 func NewResolver(
@@ -34,7 +34,7 @@ func NewResolver(
 	SizeStr *sizeStorage.SizePostgresStorage,
 	ColorStr *colorStorage.ColorPostgresStorage,
 	TrManager *manager.Manager,
-	authgrpclient *sandjmagrpc.Client,
+	authgrpclient *authgrpc.Client,
 ) *Resolver {
 	return &Resolver{
 		ProductStr:    ProductStr,

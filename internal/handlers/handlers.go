@@ -18,7 +18,7 @@ import (
 	genGql "github.com/Sanchir01/sandjma_graphql/internal/gql/generated"
 	resolver "github.com/Sanchir01/sandjma_graphql/internal/gql/resolvers"
 	customMiddleware "github.com/Sanchir01/sandjma_graphql/internal/handlers/middleware"
-	"github.com/Sanchir01/sandjma_graphql/internal/server/grpc/sandjmagrpc"
+	"github.com/Sanchir01/sandjma_graphql/internal/server/grpc/authgrpc"
 	"github.com/avito-tech/go-transaction-manager/trm/v2/manager"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
@@ -40,7 +40,7 @@ type Router struct {
 	sizeStr       *sizeStorage.SizePostgresStorage
 	colorStr      *colorStorage.ColorPostgresStorage
 	trManager     *manager.Manager
-	authgrpclient *sandjmagrpc.Client
+	authgrpclient *authgrpc.Client
 }
 
 const (
@@ -54,7 +54,7 @@ func NewChiRouter(
 	lg *slog.Logger, config *config.Config, chi *chi.Mux, productStr *storage.ProductPostgresStorage,
 	categoryStr *categoryStore.CategoryPostgresStore, userStr *userStorage.UserPostgresStorage, sizeStr *sizeStorage.SizePostgresStorage,
 	colorStr *colorStorage.ColorPostgresStorage,
-	trManager *manager.Manager, authgrpclient *sandjmagrpc.Client,
+	trManager *manager.Manager, authgrpclient *authgrpc.Client,
 ) *Router {
 	return &Router{
 		chiRouter:     chi,
