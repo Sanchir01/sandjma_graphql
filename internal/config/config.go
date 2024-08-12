@@ -50,7 +50,8 @@ type ErrorsBody struct {
 	code    int    `yaml:"code"`
 }
 type GrpcClientsConfig struct {
-	Auth GrpcClient `yaml:"auth"`
+	Auth     GrpcClient `yaml:"auth"`
+	Category GrpcClient `yaml:"category"`
 }
 
 func InitConfig() *Config {

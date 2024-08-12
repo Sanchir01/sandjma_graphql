@@ -5,9 +5,9 @@ import (
 	"errors"
 	telegram "github.com/Sanchir01/sandjma_graphql/internal/bot"
 	"github.com/Sanchir01/sandjma_graphql/internal/config"
-	categoryStore "github.com/Sanchir01/sandjma_graphql/internal/database/store/category"
 	colorStorage "github.com/Sanchir01/sandjma_graphql/internal/database/store/color"
 	"github.com/Sanchir01/sandjma_graphql/internal/server/grpc/authgrpc"
+	"github.com/Sanchir01/sandjma_graphql/internal/server/grpc/categorygrpc"
 	"github.com/Sanchir01/sandjma_graphql/pkg/lib/db/connect"
 
 	"github.com/Sanchir01/sandjma_graphql/internal/database/store/product"
@@ -28,8 +28,6 @@ import (
 	"syscall"
 )
 
-type ctxKey int
-
 var (
 	development = "development"
 	production  = "production"
@@ -48,20 +46,24 @@ func main() {
 	r := chi.NewRouter()
 
 	authgrpclient, err := authgrpc.NewGrpcAuth(context.Background(), cfg.GrpcClients.Auth.Address, cfg.GrpcClients.Auth.Retries, lg)
+
 	if err != nil {
 		lg.Error("failed init auth grpc client", err)
 		os.Exit(1)
 	}
-
+	categorygrpcclient, err := categorygrpc.NewGrpcCategory(context.Background(), cfg.GrpcClients.Category.Address, cfg.GrpcClients.Category.Retries, lg)
+	if err != nil {
+		lg.Error("failed init category grpc client", err)
+		os.Exit(1)
+	}
 	var (
-		productStorage  = productStore.NewProductPostgresStorage(db)
-		categoryStorage = categoryStore.NewCategoryPostgresStore(db)
-		userStorages    = userStorage.NewUserPostgresStorage(db)
-		colorStorages   = colorStorage.NewColorPostgresStorage(db)
-		sizeStorages    = sizeStorage.NewProductPostgresStorage(db)
-		handlers        = httpHandlers.NewChiRouter(
+		productStorage = productStore.NewProductPostgresStorage(db)
+		userStorages   = userStorage.NewUserPostgresStorage(db)
+		colorStorages  = colorStorage.NewColorPostgresStorage(db)
+		sizeStorages   = sizeStorage.NewProductPostgresStorage(db)
+		handlers       = httpHandlers.NewChiRouter(
 			lg, cfg, r,
-			productStorage, categoryStorage, userStorages, sizeStorages, colorStorages,
+			productStorage, categorygrpcclient, userStorages, sizeStorages, colorStorages,
 			trManager, authgrpclient,
 		)
 	)

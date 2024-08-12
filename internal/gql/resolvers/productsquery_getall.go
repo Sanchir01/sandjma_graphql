@@ -15,11 +15,11 @@ import (
 // GetAllProduct is the resolver for the getAllProduct field.
 func (r *productQueryResolver) GetAllProduct(ctx context.Context, obj *model.ProductQuery, sort model.ArticleBlockFindSortEnum) (model.GetAllProductResult, error) {
 	products, err := r.ProductStr.GetAllProducts(ctx)
-	//r.Logger.Info("All products", products)
 	if err != nil {
 		return response.NewInternalErrorProblem("error for get all products db"), nil
 	}
-	req, err := r.Authgrpclient.IsUserPhone(ctx, "1234")
+	req, err := r.GrpcAuthlient.IsUserPhone(ctx, "1234")
+
 	r.Logger.Warn("req auth grpc client request", req)
 	productsFetch, err := featureProduct.MapManyProductsToGqlModels(products)
 	if err != nil {

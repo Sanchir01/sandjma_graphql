@@ -33,4 +33,8 @@ database:
 grpc:
   auth:
     address: "localhost:44044"
+    retries: 10
+  category:
+    address: "localhost:22022"
+    retries: 10
 

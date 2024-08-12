@@ -8,25 +8,24 @@ import (
 	"context"
 	"log/slog"
 
-	featureCategory "github.com/Sanchir01/sandjma_graphql/internal/feature/category"
 	"github.com/Sanchir01/sandjma_graphql/internal/gql/model"
 	"github.com/Sanchir01/sandjma_graphql/pkg/lib/api/response"
 )
 
 // GetAllCategory is the resolver for the getAllCategory field.
 func (r *categoryQueryResolver) GetAllCategory(ctx context.Context, obj *model.CategoryQuery) (model.CategoryGetAllResult, error) {
-	categoryStr, err := r.Resolver.CategoryStr.GetAllCategory(ctx)
+	categoryStr, err := r.Resolver.GrpcCategoryClient.AllCategory(ctx)
 	if err != nil {
 		r.Logger.Error("GetAllCategory error", slog.String("error", err.Error()))
 		return response.NewInternalErrorProblem("error for get all category db"), nil
 	}
+	r.Logger.Warn("grpc category", categoryStr)
+	//categoriesGql, err := featureCategory.MapCategoryToGqlModel(categoryStr)
 
-	categoriesGql, err := featureCategory.MapCategoryToGqlModel(categoryStr)
+	//if err != nil {
+	//	r.Logger.Error("GetAllCategory mapping gql model error", slog.String("error", err.Error()))
+	//	return response.NewInternalErrorProblem("error for mapping category gql"), nil
+	//}
 
-	if err != nil {
-		r.Logger.Error("GetAllCategory mapping gql model error", slog.String("error", err.Error()))
-		return response.NewInternalErrorProblem("error for mapping category gql"), nil
-	}
-
-	return model.CategoryGetAllOk{Category: categoriesGql}, nil
+	return model.CategoryGetAllOk{Category: nil}, nil
 }

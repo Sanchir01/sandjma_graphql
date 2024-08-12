@@ -8,7 +8,6 @@ import (
 	"github.com/99designs/gqlgen/graphql/handler/transport"
 	"github.com/99designs/gqlgen/graphql/playground"
 	"github.com/Sanchir01/sandjma_graphql/internal/config"
-	categoryStore "github.com/Sanchir01/sandjma_graphql/internal/database/store/category"
 	"github.com/Sanchir01/sandjma_graphql/internal/database/store/color"
 	productStore "github.com/Sanchir01/sandjma_graphql/internal/database/store/product"
 	storage "github.com/Sanchir01/sandjma_graphql/internal/database/store/product"
@@ -19,6 +18,7 @@ import (
 	resolver "github.com/Sanchir01/sandjma_graphql/internal/gql/resolvers"
 	customMiddleware "github.com/Sanchir01/sandjma_graphql/internal/handlers/middleware"
 	"github.com/Sanchir01/sandjma_graphql/internal/server/grpc/authgrpc"
+	"github.com/Sanchir01/sandjma_graphql/internal/server/grpc/categorygrpc"
 	"github.com/avito-tech/go-transaction-manager/trm/v2/manager"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
@@ -31,16 +31,16 @@ import (
 )
 
 type Router struct {
-	chiRouter     *chi.Mux
-	lg            *slog.Logger
-	config        *config.Config
-	productStr    *productStore.ProductPostgresStorage
-	categoryStr   *categoryStore.CategoryPostgresStore
-	userStr       *userStorage.UserPostgresStorage
-	sizeStr       *sizeStorage.SizePostgresStorage
-	colorStr      *colorStorage.ColorPostgresStorage
-	trManager     *manager.Manager
-	authgrpclient *authgrpc.Client
+	chiRouter         *chi.Mux
+	lg                *slog.Logger
+	config            *config.Config
+	productStr        *productStore.ProductPostgresStorage
+	categorygrpclient *categorygrpc.Client
+	userStr           *userStorage.UserPostgresStorage
+	sizeStr           *sizeStorage.SizePostgresStorage
+	colorStr          *colorStorage.ColorPostgresStorage
+	trManager         *manager.Manager
+	authgrpclient     *authgrpc.Client
 }
 
 const (
@@ -52,21 +52,21 @@ const (
 
 func NewChiRouter(
 	lg *slog.Logger, config *config.Config, chi *chi.Mux, productStr *storage.ProductPostgresStorage,
-	categoryStr *categoryStore.CategoryPostgresStore, userStr *userStorage.UserPostgresStorage, sizeStr *sizeStorage.SizePostgresStorage,
+	categorygrpclient *categorygrpc.Client, userStr *userStorage.UserPostgresStorage, sizeStr *sizeStorage.SizePostgresStorage,
 	colorStr *colorStorage.ColorPostgresStorage,
 	trManager *manager.Manager, authgrpclient *authgrpc.Client,
 ) *Router {
 	return &Router{
-		chiRouter:     chi,
-		lg:            lg,
-		config:        config,
-		productStr:    productStr,
-		categoryStr:   categoryStr,
-		userStr:       userStr,
-		sizeStr:       sizeStr,
-		colorStr:      colorStr,
-		trManager:     trManager,
-		authgrpclient: authgrpclient,
+		chiRouter:         chi,
+		lg:                lg,
+		config:            config,
+		productStr:        productStr,
+		categorygrpclient: categorygrpclient,
+		userStr:           userStr,
+		sizeStr:           sizeStr,
+		colorStr:          colorStr,
+		trManager:         trManager,
+		authgrpclient:     authgrpclient,
 	}
 }
 
@@ -112,7 +112,7 @@ func (rout *Router) NewGraphQLHandler() *gqlhandler.Server {
 
 func (rout *Router) newSchemaConfig() genGql.Config {
 	cfg := genGql.Config{Resolvers: resolver.NewResolver(
-		rout.productStr, rout.categoryStr, rout.userStr,
+		rout.productStr, rout.categorygrpclient, rout.userStr,
 		rout.lg, rout.sizeStr, rout.colorStr,
 		rout.trManager,
 		rout.authgrpclient,

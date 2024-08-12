@@ -6,21 +6,20 @@ package resolver
 
 import (
 	"context"
+	"github.com/google/uuid"
 
 	"github.com/Sanchir01/sandjma_graphql/internal/gql/model"
-	"github.com/Sanchir01/sandjma_graphql/pkg/lib/api/response"
-	"github.com/Sanchir01/sandjma_graphql/pkg/lib/utils"
 )
 
 // CreateCategory is the resolver for the createCategory field.
 func (r *categoryMutationResolver) CreateCategory(ctx context.Context, obj *model.CategoryMutation, input *model.CreateCategoryInput) (model.CategoryCreateResult, error) {
-	newSlug, err := utils.Slugify(input.Name)
-	if err != nil {
-		return response.NewInternalErrorProblem("error generating slug category"), err
-	}
-	id, err := r.CategoryStr.CreateCategory(ctx, input, newSlug)
-	if err != nil {
-		return response.NewInternalErrorProblem("error creating category"), err
-	}
-	return model.CategoryCreateOk{ID: id}, nil
+	//newSlug, err := utils.Slugify(input.Name)
+	//if err != nil {
+	//	return response.NewInternalErrorProblem("error generating slug category"), err
+	//}
+	//id, err := r.CategoryStr.CreateCategory(ctx, input, newSlug)
+	//if err != nil {
+	//	return response.NewInternalErrorProblem("error creating category"), err
+	//}
+	return model.CategoryCreateOk{ID: uuid.New()}, nil
 }

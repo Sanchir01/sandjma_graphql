@@ -40,3 +40,13 @@ func NewGrpcCategory(ctx context.Context, addr string, retries int, log *slog.Lo
 	}
 	return &Client{api: sandjmav1.NewCategoriesClient(cc), log: log}, nil
 }
+
+func (g *Client) AllCategory(ctx context.Context) (*sandjmav1.GetAllCategoryResponse, error) {
+	const op = "grpc.category.AllCategory"
+	name := &sandjmav1.Empty{}
+	resp, err := g.api.GetAllCategory(ctx, name)
+	if err != nil {
+		return nil, fmt.Errorf("%s: %w", op, err)
+	}
+	return resp, nil
+}
