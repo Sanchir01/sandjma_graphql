@@ -6,8 +6,8 @@ import (
 	telegram "github.com/Sanchir01/sandjma_graphql/internal/bot"
 	"github.com/Sanchir01/sandjma_graphql/internal/config"
 	colorStorage "github.com/Sanchir01/sandjma_graphql/internal/database/store/color"
-	"github.com/Sanchir01/sandjma_graphql/internal/server/grpc/authgrpc"
-	"github.com/Sanchir01/sandjma_graphql/internal/server/grpc/categorygrpc"
+	"github.com/Sanchir01/sandjma_graphql/internal/server/grpc/client/authgrpc"
+	"github.com/Sanchir01/sandjma_graphql/internal/server/grpc/client/categorygrpc"
 	"github.com/Sanchir01/sandjma_graphql/pkg/lib/db/connect"
 
 	"github.com/Sanchir01/sandjma_graphql/internal/database/store/product"
@@ -20,7 +20,6 @@ import (
 	"github.com/avito-tech/go-transaction-manager/trm/v2/manager"
 	"github.com/go-chi/chi/v5"
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api"
-	_ "github.com/lib/pq"
 	"log"
 	"log/slog"
 	"os"
@@ -46,7 +45,6 @@ func main() {
 	r := chi.NewRouter()
 
 	authgrpclient, err := authgrpc.NewGrpcAuth(context.Background(), cfg.GrpcClients.Auth.Address, cfg.GrpcClients.Auth.Retries, lg)
-
 	if err != nil {
 		lg.Error("failed init auth grpc client", err)
 		os.Exit(1)

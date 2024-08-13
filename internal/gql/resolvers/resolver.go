@@ -5,8 +5,8 @@ import (
 	productStorage "github.com/Sanchir01/sandjma_graphql/internal/database/store/product"
 	sizeStorage "github.com/Sanchir01/sandjma_graphql/internal/database/store/size"
 	userStorage "github.com/Sanchir01/sandjma_graphql/internal/database/store/user"
-	"github.com/Sanchir01/sandjma_graphql/internal/server/grpc/authgrpc"
-	"github.com/Sanchir01/sandjma_graphql/internal/server/grpc/categorygrpc"
+	"github.com/Sanchir01/sandjma_graphql/internal/server/grpc/client/authgrpc"
+	"github.com/Sanchir01/sandjma_graphql/internal/server/grpc/client/categorygrpc"
 	"github.com/avito-tech/go-transaction-manager/trm/v2/manager"
 	"log/slog"
 )
