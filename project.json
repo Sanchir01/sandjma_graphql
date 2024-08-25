@@ -2,7 +2,7 @@
   "name": "gateway",
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
   "projectType": "application",
-  "sourceRoot": "app/sandjma_graphql",
+  "sourceRoot": "app/gateway",
   "tags": [],
   "targets": {
     "build": {
