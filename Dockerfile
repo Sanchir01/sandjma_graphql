@@ -10,4 +10,5 @@ RUN sudo apt-get update && \
     sudo apt-get install -y make
 
 RUN go build -o ./.bin/main ./cmd/main/main.go
+
 CMD [""]

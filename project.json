@@ -17,6 +17,13 @@
         "main": "{projectRoot}/cmd/main/main.go"
       }
     },
+    "dev": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "air",
+        "cwd": "{projectRoot}"
+      }
+    },
     "test": {
       "executor": "@nx-go/nx-go:test"
     },
