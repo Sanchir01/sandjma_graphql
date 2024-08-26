@@ -1,0 +1,40 @@
+env: "development"
+
+storage_path: "internal/db/db.db"
+
+http_server:
+  port: "5000"
+  host: "localhost"
+  timeout: 5s
+  debug: true
+  idle_timeout: 60s
+
+
+errors:
+  bad_request:
+    message: "не правильный запрос"
+    code: 400
+  unauthorized:
+    message: "unauthorized"
+    code: 401
+  not_found:
+    message: "не правильно введены данные"
+    code: 404
+  not_implemented: "not implemented"
+
+database:
+  host: "localhost"
+  port: "5436"
+  user: "postgres"
+  ssl: "disable"
+  password: "postgres"
+  dbname: "test"
+
+grpc:
+  auth:
+    address: "localhost:44044"
+    retries: 10
+  category:
+    address: "localhost:22022"
+    retries: 10
+

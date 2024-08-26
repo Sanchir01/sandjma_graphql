@@ -1,0 +1,13 @@
+
+
+extend type ColorQuery {
+    getAllColors:GetAllColorResult! @goField(forceResolver: true)
+}
+
+type GetAllColorOk {
+ colors:[Color!]!
+}
+union GetAllColorResult =
+    | GetAllColorOk
+    | InternalErrorProblem
+

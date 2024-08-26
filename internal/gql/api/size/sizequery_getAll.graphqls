@@ -1,0 +1,10 @@
+extend type SizeQuery {
+    getAllSizes:GetAllSizeResult! @goField(forceResolver: true)
+}
+type GetAllSizeOk {
+    sizes:[Size!]!
+}
+
+union GetAllSizeResult =
+    |InternalErrorProblem
+    |GetAllSizeOk

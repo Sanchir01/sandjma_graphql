@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="SqlDialectMappings">
+    <file url="file://$PROJECT_DIR$/internal/database/migrations/20240530174846_updates_products_one_tomany_category.sql" dialect="PostgreSQL" />
+    <file url="file://$PROJECT_DIR$/internal/database/migrations/20240530191411_deletecategory_id.sql" dialect="PostgreSQL" />
+    <file url="file://$PROJECT_DIR$/internal/database/migrations/20240530191551_uuid_category_products.sql" dialect="PostgreSQL" />
+    <file url="file://$PROJECT_DIR$/internal/database/migrations/20240530200629_reverse_id_categories.sql" dialect="PostgreSQL" />
+    <file url="file://$PROJECT_DIR$/internal/database/migrations/20240530201159_reverse_id_products.sql" dialect="PostgreSQL" />
+    <file url="file://$PROJECT_DIR$/internal/database/migrations/20240530201752_category_uuid.sql" dialect="PostgreSQL" />
+    <file url="file://$PROJECT_DIR$/internal/database/migrations/20240530202554_products_one_to_many.sql" dialect="PostgreSQL" />
+    <file url="file://$PROJECT_DIR$/internal/database/migrations/20240531175503_products_description.sql" dialect="PostgreSQL" />
+    <file url="file://$PROJECT_DIR$/internal/database/migrations/20240604191538_use_table_init.sql" dialect="PostgreSQL" />
+    <file url="file://$PROJECT_DIR$/internal/database/migrations/20240614031928_images_porduct_rename.sql" dialect="PostgreSQL" />
+    <file url="file://$PROJECT_DIR$/internal/database/store/user/user.go" dialect="GenericSQL" />
+    <file url="PROJECT" dialect="PostgreSQL" />
+  </component>
+</project>

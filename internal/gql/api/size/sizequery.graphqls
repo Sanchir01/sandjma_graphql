@@ -1,0 +1,6 @@
+type SizeQuery
+
+
+extend type Query {
+    size:SizeQuery
+}

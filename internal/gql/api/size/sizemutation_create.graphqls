@@ -1,0 +1,13 @@
+
+extend type SizeMutation {
+    createSize(input:SizeCreateInput):SizeCreateResult! @goField(forceResolver: true) @hasRole(role: ADMIN)
+}
+type SizeCreateOk {
+    ok:Uuid!
+}
+input SizeCreateInput {
+    name:String!
+}
+union SizeCreateResult =
+    |InternalErrorProblem
+    | SizeCreateOk

@@ -1,0 +1,11 @@
+type Product {
+    id:Uuid!
+    name:String!
+    price: Int!
+    created_at: DateTime!
+    updated_at: DateTime!
+    images:[String!]!
+    category_id: Uuid!
+    description:String!
+    version:UInt!
+}

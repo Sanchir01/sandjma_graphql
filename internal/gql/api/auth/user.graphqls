@@ -1,0 +1,12 @@
+type User {
+    id:Uuid!
+    name:String!
+    created_at:DateTime!
+    updated_at:DateTime!
+    phone:String!
+    email:String!
+    password:String!
+    avatar_path: String!
+    role: Role!
+}
+

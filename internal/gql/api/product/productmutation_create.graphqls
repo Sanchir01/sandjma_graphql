@@ -1,0 +1,25 @@
+
+
+extend type ProductMutation {
+    createProduct(input:CreateProductInput): ProductCreateResult! @goField(forceResolver: true) @hasRole(role: ADMIN)
+}
+
+type ProductNotFoundProblem implements ProblemInterface {
+     message: String!
+}
+
+input CreateProductInput {
+    name: String!
+    description:String!
+    price: Int!
+    categoryId:Uuid!
+    images:[String!]!
+}
+type ProductCreateOk {
+    id:Uuid!
+}
+union ProductCreateResult =
+    | ProductNotFoundProblem
+    | InternalErrorProblem
+    | ProductCreateOk
+    | UnauthorizedProblem
