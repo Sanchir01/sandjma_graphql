@@ -3,6 +3,9 @@ package categorygrpc
 import (
 	"context"
 	"fmt"
+	"log/slog"
+	"time"
+
 	sandjmav1 "github.com/Sanchir01/protos_files_job/pkg/gen/golang/category"
 	mwlogger "github.com/Sanchir01/sandjma_graphql/pkg/lib/logger/middleware/logger"
 	grpclog "github.com/grpc-ecosystem/go-grpc-middleware/v2/interceptors/logging"
@@ -10,8 +13,7 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/credentials/insecure"
-	"log/slog"
-	"time"
+	"google.golang.org/protobuf/types/known/emptypb"
 )
 
 type Client struct {
@@ -43,8 +45,8 @@ func NewGrpcCategory(ctx context.Context, addr string, retries int, log *slog.Lo
 
 func (g *Client) AllCategory(ctx context.Context) (*sandjmav1.GetAllCategoryResponse, error) {
 	const op = "grpc.category.AllCategory"
-	name := &sandjmav1.Empty{}
-	resp, err := g.api.GetAllCategory(ctx, name)
+	emp := &emptypb.Empty{}
+	resp, err := g.api.GetAllCategory(ctx, emp)
 	if err != nil {
 		return nil, fmt.Errorf("%s: %w", op, err)
 	}
